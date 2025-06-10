@@ -1,0 +1,271 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { useTheme } from "@/components/contexts/ThemeProvider";
+import { Client } from "@/types/client";
+import {
+  BarChart3,
+  Users,
+  DollarSign,
+  TrendingUp,
+  LogOut,
+  Palette,
+} from "lucide-react";
+
+export default function DashboardPage() {
+  const [client, setClient] = useState<Client | null>(null);
+  const [showThemeCustomizer, setShowThemeCustomizer] = useState(false);
+  const router = useRouter();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    const currentUser = localStorage.getItem("currentUser");
+    if (!currentUser) {
+      router.push("/");
+      return;
+    }
+
+    const userData = JSON.parse(currentUser);
+    setClient(userData);
+
+    // Apply client theme
+    setTheme(userData.theme.className);
+  }, [router, setTheme]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("currentUser");
+    router.push("/");
+  };
+
+  if (!client)
+    return (
+      <div className="p-10 text-center text-2xl font-bold text-gray-800">
+        Please wait...
+      </div>
+    );
+
+  const metrics = [
+    {
+      title: "Total Revenue",
+      value: client.metrics.revenue,
+      icon: DollarSign,
+      change: client.metrics.growth,
+    },
+    {
+      title: "Active Users",
+      value: client.metrics.users,
+      icon: Users,
+      change: "-5.2%",
+    },
+    {
+      title: "Total Orders",
+      value: client.metrics.orders,
+      icon: BarChart3,
+      change: "+3.1%",
+    },
+    {
+      title: "Growth Rate",
+      value: client.metrics.growth,
+      icon: TrendingUp,
+      change: "+0.8%",
+    },
+  ];
+
+  const statusBgColor: Record<string, string> = {
+    success: "bg-success",
+    info: "bg-info",
+    danger: "bg-danger",
+  };
+
+  return (
+    <div className="min-h-screen">
+      {/* Navbar */}
+      <nav className="bg-theme-primary sticky top-0 z-10 shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-950">
+                <span className="text-sm font-bold">
+                  {client.name.charAt(0)}
+                </span>
+              </div>
+              <h1 className="ml-3 text-xl font-semibold">
+                {client.name} Dashboard
+              </h1>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="gray"
+                size="sm"
+                onClick={() => setShowThemeCustomizer(!showThemeCustomizer)}
+              >
+                <Palette className="h-4 w-4" />
+              </Button>
+
+              <Button variant="gray" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span className="-my-1">Logout</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900">
+            Welcome back, {client.name}
+          </h2>
+          <p className="mt-2 text-gray-600">
+            {`Here's what's happening with your business today.`}
+          </p>
+        </div>
+
+        {/* Theme Customizer */}
+        {showThemeCustomizer && (
+          <Card className="border-theme-primary/50 mb-8 border-4">
+            <CardHeader>
+              <CardTitle className="text-theme-primary">
+                Theme Customization (Coming Soon)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4 text-gray-600">
+                Advanced theme customization features will be available here,
+                including:
+              </p>
+              <ul className="list-inside list-disc space-y-1 text-gray-600">
+                <li>Theme picker</li>
+                <li>Brand logo upload</li>
+                <li>Custom font selection</li>
+                <li>Layout preferences</li>
+                <li>Widget customization</li>
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Metrics Grid */}
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {metrics.map((metric, index) => {
+            const Icon = metric.icon;
+            return (
+              <Card key={index} className="transition-shadow hover:shadow-lg">
+                <CardContent className="!p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">
+                        {metric.title}
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {metric.value}
+                      </p>
+                      <p
+                        className={`text-sm font-medium ${
+                          metric.change.includes("+")
+                            ? "text-success"
+                            : "text-danger"
+                        } `}
+                      >
+                        {metric.change}
+                      </p>
+                    </div>
+                    <div className="bg-theme-accent/10 text-theme-accent rounded-full p-3">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Charts Section */}
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Revenue Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex h-64 items-center justify-center rounded-lg bg-gray-100">
+                <div className="text-center">
+                  <BarChart3 className="text-theme-accent mx-auto mb-2 h-12 w-12" />
+                  <p className="text-gray-500">Chart Component</p>
+                  <p className="text-sm text-gray-400">Integration Ready</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>User Analytics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex h-64 items-center justify-center rounded-lg bg-gray-100">
+                <div className="text-center">
+                  <Users className="text-theme-accent mx-auto mb-2 h-12 w-12" />
+                  <p className="text-gray-500">Analytics Component</p>
+                  <p className="text-sm text-gray-400">Integration Ready</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[
+                {
+                  action: "New order received",
+                  time: "2 minutes ago",
+                  status: "info",
+                },
+                {
+                  action: "User registration",
+                  time: "5 minutes ago",
+                  status: "info",
+                },
+                {
+                  action: "Payment processed",
+                  time: "10 minutes ago",
+                  status: "success",
+                },
+                {
+                  action: "System backup stopped",
+                  time: "1 hour ago",
+                  status: "danger",
+                },
+              ].map((activity, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between border-b border-gray-200 py-3 last:border-b-0"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div
+                      className={`h-2 w-2 rounded-full ${
+                        statusBgColor[activity.status]
+                      }`}
+                    />
+                    <span className="text-gray-900">{activity.action}</span>
+                  </div>
+                  <span className="text-sm text-gray-500">{activity.time}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
