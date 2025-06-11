@@ -352,39 +352,40 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <footer className="bg-background py-4 text-gray-800">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between px-4 sm:flex-row sm:px-6 lg:px-8">
-          <p className="text-sm">&copy; chiraggoyal777</p>
-          <div className="mt-2 flex gap-4 sm:mt-0">
+      <footer className="bg-background py-4 text-gray-600 dark:text-gray-800">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 sm:flex-row sm:px-6 lg:px-8">
+          <p className="text-sm opacity-80">&copy; chiraggoyal777</p>
+          <span className="px-4 opacity-30 hidden sm:block">|</span>
+          <div className="mt-2 flex sm:mt-0">
             <a
               href="https://github.com/chiraggoyal777"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit my Github repo"
-              className="hover:text-theme-primary transition-colors"
+              className="shrink-0 block p-2 rounded-full hover:bg-theme-primary/20 hover:text-theme-primary transition-colors"
               title="Visit my Github repo"
             >
-              <Github className="h-5 w-5" />
+              <Github className="size-4" />
             </a>
             <a
               href="https://codepen.io/chiraggoyal777"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Follow me on Codepen"
-              className="hover:text-theme-primary transition-colors"
+              className="shrink-0 block p-2 rounded-full hover:bg-theme-primary/20 hover:text-theme-primary transition-colors"
               title="Follow me on Codepen"
             >
-              <Codepen className="h-5 w-5" />
+              <Codepen className="size-4" />
             </a>
             <a
               href="https://www.linkedin.com/in/chiraggoyal777"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Let's connect on LinkedIn"
-              className="hover:text-theme-primary transition-colors"
+              className="shrink-0 block p-2 rounded-full hover:bg-theme-primary/20 hover:text-theme-primary transition-colors"
               title="Let's connect on LinkedIn"
             >
-              <Linkedin className="h-5 w-5" />
+              <Linkedin className="size-4" />
             </a>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { useTheme } from "@/components/contexts/ThemeProvider";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { getClientByEmail } from "@/lib/clients";
+import { Codepen, Github, Linkedin } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -50,7 +51,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="mb-4">
             <div className="bg-primary mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-              <span className="text-xl font-bold">YOU</span>
+              <span className="text-xl font-bold">Hi</span>
             </div>
           </div>
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
@@ -114,6 +115,40 @@ export default function LoginPage() {
             <p>Orange: admin@orangecorp.com</p>
             <p>Purple: admin@purpleind.com</p>
             <p>Password: password</p>
+          </div>
+
+          <hr className="mt-6 mb-4" />
+          <div className="text-center flex justify-center text-gray-600">
+            <a
+              href="https://github.com/chiraggoyal777"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit my Github repo"
+              className="shrink-0 block p-2 rounded-full hover:bg-primary/20 hover:text-primary transition-colors"
+              title="Visit my Github repo"
+            >
+              <Github className="size-4" />
+            </a>
+            <a
+              href="https://codepen.io/chiraggoyal777"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow me on Codepen"
+              className="shrink-0 block p-2 rounded-full hover:bg-primary/20 hover:text-primary transition-colors"
+              title="Follow me on Codepen"
+            >
+              <Codepen className="size-4" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/chiraggoyal777"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Let's connect on LinkedIn"
+              className="shrink-0 block p-2 rounded-full hover:bg-primary/20 hover:text-primary transition-colors"
+              title="Let's connect on LinkedIn"
+            >
+              <Linkedin className="size-4" />
+            </a>
           </div>
         </CardContent>
       </Card>
