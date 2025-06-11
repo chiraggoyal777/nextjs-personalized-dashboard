@@ -92,7 +92,7 @@ export default function DashboardPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-950">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-950">
                 <span className="text-sm font-bold">
                   {client.name.charAt(0)}
                 </span>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
           <div className="relative mb-8">
             <div className="absolute -top-2 -right-2 w-max">
               <Button
-                className="!bg-gray-0 !text-theme-accent !border-theme-accent !rounded-full !border-4 !p-1"
+                className="!bg-gray-0 !text-theme-accent !border-theme-accent !ring-theme-accent/20 !rounded-full !border-4 !p-1"
                 onClick={() => setShowThemeCustomizer(false)}
               >
                 <X className="h-4 w-4" />
@@ -262,11 +262,11 @@ export default function DashboardPage() {
               <CardTitle>Revenue Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex h-64 items-center justify-center rounded-lg bg-gray-100">
+              <div className="bg-theme-accent/10 flex h-64 items-center justify-center rounded-lg">
                 <div className="text-center">
                   <BarChart3 className="text-theme-accent mx-auto mb-2 h-12 w-12" />
-                  <p className="text-gray-500">Chart Component</p>
-                  <p className="text-sm text-gray-400">Integration Ready</p>
+                  <p className="text-gray-800">Chart Component</p>
+                  <p className="text-sm text-gray-600">Integration Ready</p>
                 </div>
               </div>
             </CardContent>
@@ -277,11 +277,11 @@ export default function DashboardPage() {
               <CardTitle>User Analytics</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex h-64 items-center justify-center rounded-lg bg-gray-100">
+              <div className="bg-theme-accent/10 flex h-64 items-center justify-center rounded-lg">
                 <div className="text-center">
                   <Users className="text-theme-accent mx-auto mb-2 h-12 w-12" />
-                  <p className="text-gray-500">Analytics Component</p>
-                  <p className="text-sm text-gray-400">Integration Ready</p>
+                  <p className="text-gray-800">Analytics Component</p>
+                  <p className="text-sm text-gray-600">Integration Ready</p>
                 </div>
               </div>
             </CardContent>

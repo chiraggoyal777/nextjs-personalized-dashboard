@@ -6,12 +6,11 @@ import {
   applyTheme,
   loadThemePreferences,
   saveThemePreferences,
-  ThemeMode,
 } from "@/lib/theme";
 import { Button } from "@/components/ui/Button";
 import { Monitor, Moon, Sun } from "lucide-react";
 import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
-import { Theme } from "@/types/theme";
+import { Theme, ThemeMode } from "@/types/theme";
 
 interface ThemeContextType {
   allThemes: Theme[];

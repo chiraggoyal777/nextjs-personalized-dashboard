@@ -1,3 +1,4 @@
+export type ThemeMode = "system" | "light" | "dark";
 export interface Theme {
   id: string;
   label: string;
