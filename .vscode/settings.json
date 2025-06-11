@@ -1,4 +1,10 @@
 {
   "eslint.debug": true,
-  "eslint.useFlatConfig": false
+  "eslint.useFlatConfig": false,
+  "prettier.jsxSingleQuote": false,
+  "prettier.singleAttributePerLine": true,
+  "prettier.singleQuote": false,
+  "prettier.printWidth": 1000,
+  "vs-code-prettier-eslint.prettierLast": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
