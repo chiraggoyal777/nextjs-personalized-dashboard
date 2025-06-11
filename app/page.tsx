@@ -36,7 +36,7 @@ export default function LoginPage() {
 
     const client = getClientByEmail(email);
 
-    if (client && password === "password") {
+    if (client && password === "nW7jK39bPqZ") {
       localStorage.setItem("currentUser", JSON.stringify(client));
       router.push("/dashboard");
     } else {
@@ -114,7 +114,7 @@ export default function LoginPage() {
             <p>Demo Credentials:</p>
             <p>Orange: admin@orangecorp.com</p>
             <p>Purple: admin@purpleind.com</p>
-            <p>Password: password</p>
+            <p>Password: nW7jK39bPqZ</p>
           </div>
 
           <hr className="mt-6 mb-4" />
