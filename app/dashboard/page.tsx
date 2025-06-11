@@ -15,6 +15,9 @@ import {
   Palette,
   X,
   WandSparkles,
+  Github,
+  Codepen,
+  Linkedin,
 } from "lucide-react";
 import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
 
@@ -142,6 +145,18 @@ export default function DashboardPage() {
                     </div>
                   </DropdownItem>
                 ))}
+                <>
+                  <hr />
+                  <DropdownItem
+                    onClick={() => setTheme("")}
+                    isSelected={theme === ""}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="from-primary to-accent size-4 rounded-full bg-gradient-to-br"></div>
+                      <span>Brand default</span>
+                    </div>
+                  </DropdownItem>
+                </>
                 {!showThemeCustomizer && (
                   <>
                     <hr />
@@ -336,6 +351,44 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <footer className="bg-background py-4 text-gray-800">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between px-4 sm:flex-row sm:px-6 lg:px-8">
+          <p className="text-sm">&copy; chiraggoyal777</p>
+          <div className="mt-2 flex gap-4 sm:mt-0">
+            <a
+              href="https://github.com/chiraggoyal777"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit my Github repo"
+              className="hover:text-theme-primary transition-colors"
+              title="Visit my Github repo"
+            >
+              <Github className="h-5 w-5" />
+            </a>
+            <a
+              href="https://codepen.io/chiraggoyal777"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow me on Codepen"
+              className="hover:text-theme-primary transition-colors"
+              title="Follow me on Codepen"
+            >
+              <Codepen className="h-5 w-5" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/chiraggoyal777"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Let's connect on LinkedIn"
+              className="hover:text-theme-primary transition-colors"
+              title="Let's connect on LinkedIn"
+            >
+              <Linkedin className="h-5 w-5" />
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
