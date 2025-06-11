@@ -23,7 +23,7 @@ export default function LoginPage() {
     } else {
       setTheme("");
     }
-  }, [router]);
+  }, [router, setTheme]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -8,6 +8,7 @@ interface DropdownProps {
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
+  position?: "bottom-center" | "bottom-right" | "bottom-left" | "top-center" | "top-right" | "top-left"
 }
 
 function Dropdown({
@@ -16,6 +17,7 @@ function Dropdown({
   isOpen,
   onToggle,
   onClose,
+  position = "bottom-center"
 }: DropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -50,7 +52,13 @@ function Dropdown({
     <div className="relative" ref={dropdownRef}>
       <div onClick={onToggle}>{trigger}</div>
       {isOpen && (
-        <div className="bg-gray-0 absolute right-0 bottom-full z-50 mb-2 w-48 rounded-lg py-1 text-gray-900 shadow-lg">
+        <div className={`bg-gray-0 absolute z-50 my-2 w-48 rounded-lg py-1 text-gray-900 shadow-lg
+          ${position.includes("center") ? "left-1/2 -translate-x-1/2" : ""}
+          ${position.includes("right") ? "right-0" : ""}
+          ${position.includes("left") ? "left-0" : ""}
+          ${position.includes("top") ? "bottom-full" : ""}
+          ${position.includes("bottom") ? "top-full" : ""}
+        `}>
           {children}
         </div>
       )}

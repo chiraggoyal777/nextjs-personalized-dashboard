@@ -1,0 +1,211 @@
+
+@import url("./themes/index.css");
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* each @theme variable must have reference somewhere, do not store actual color here */
+@theme inline {
+  /* reset colors */
+  --color-*: initial;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* shades of gray from 0 to 1000 */
+  --color-gray-0: var(--color-gray-0);
+  --color-gray-50: var(--color-gray-50);
+  --color-gray-100: var(--color-gray-100);
+  --color-gray-200: var(--color-gray-200);
+  --color-gray-300: var(--color-gray-300);
+  --color-gray-400: var(--color-gray-400);
+  --color-gray-500: var(--color-gray-500);
+  --color-gray-600: var(--color-gray-600);
+  --color-gray-700: var(--color-gray-700);
+  --color-gray-800: var(--color-gray-800);
+  --color-gray-900: var(--color-gray-900);
+  --color-gray-950: var(--color-gray-950);
+  --color-gray-1000: var(--color-gray-1000);
+
+  /* state colors */
+  --color-info: var(--color-info);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+
+  /* brand primary colors */
+  --color-primary: var(--color-primary);
+  --color-primary-interaction: var(--color-primary-interaction);
+  --color-primary-contrast: var(--color-primary-contrast);
+  --color-primary-50: var(--color-primary-50);
+  --color-primary-100: var(--color-primary-100);
+  --color-primary-200: var(--color-primary-200);
+  --color-primary-300: var(--color-primary-300);
+  --color-primary-400: var(--color-primary-400);
+  --color-primary-500: var(--color-primary-500);
+  --color-primary-600: var(--color-primary-600);
+  --color-primary-700: var(--color-primary-700);
+  --color-primary-800: var(--color-primary-800);
+  --color-primary-900: var(--color-primary-900);
+  --color-primary-950: var(--color-primary-950);
+
+  /* brand accent colors */
+  --color-accent: var(--color-accent);
+  --color-accent-interaction: var(--color-accent-interaction);
+  --color-accent-contrast: var(--color-accent-contrast);
+  --color-accent-50: var(--color-accent-50);
+  --color-accent-100: var(--color-accent-100);
+  --color-accent-200: var(--color-accent-200);
+  --color-accent-300: var(--color-accent-300);
+  --color-accent-400: var(--color-accent-400);
+  --color-accent-500: var(--color-accent-500);
+  --color-accent-600: var(--color-accent-600);
+  --color-accent-700: var(--color-accent-700);
+  --color-accent-800: var(--color-accent-800);
+  --color-accent-900: var(--color-accent-900);
+  --color-accent-950: var(--color-accent-950);
+
+  /* theme primary colors */
+  --color-theme-primary: var(--color-theme-primary, var(--color-primary));
+  --color-theme-primary-interaction: var(
+    --color-theme-primary-interaction,
+    var(--color-primary-interaction)
+  );
+  --color-theme-primary-contrast: var(
+    --color-theme-primary-contrast,
+    var(--color-primary-contrast)
+  );
+  --color-theme-primary-50: var(
+    --color-theme-primary-50,
+    var(--color-primary-50)
+  );
+  --color-theme-primary-100: var(
+    --color-theme-primary-100,
+    var(--color-primary-100)
+  );
+  --color-theme-primary-200: var(
+    --color-theme-primary-200,
+    var(--color-primary-200)
+  );
+  --color-theme-primary-300: var(
+    --color-theme-primary-300,
+    var(--color-primary-300)
+  );
+  --color-theme-primary-400: var(
+    --color-theme-primary-400,
+    var(--color-primary-400)
+  );
+  --color-theme-primary-500: var(
+    --color-theme-primary-500,
+    var(--color-primary-500)
+  );
+  --color-theme-primary-600: var(
+    --color-theme-primary-600,
+    var(--color-primary-600)
+  );
+  --color-theme-primary-700: var(
+    --color-theme-primary-700,
+    var(--color-primary-700)
+  );
+  --color-theme-primary-800: var(
+    --color-theme-primary-800,
+    var(--color-primary-800)
+  );
+  --color-theme-primary-900: var(
+    --color-theme-primary-900,
+    var(--color-primary-900)
+  );
+  --color-theme-primary-950: var(
+    --color-theme-primary-950,
+    var(--color-primary-950)
+  );
+
+  /* theme accent colors */
+  --color-theme-accent: var(--color-theme-accent, var(--color-accent));
+  --color-theme-accent-interaction: var(
+    --color-theme-accent-interaction,
+    var(--color-accent-interaction)
+  );
+  --color-theme-accent-contrast: var(
+    --color-theme-accent-contrast,
+    var(--color-accent-contrast)
+  );
+  --color-theme-accent-50: var(--color-theme-accent-50, var(--color-accent-50));
+  --color-theme-accent-100: var(
+    --color-theme-accent-100,
+    var(--color-accent-100)
+  );
+  --color-theme-accent-200: var(
+    --color-theme-accent-200,
+    var(--color-accent-200)
+  );
+  --color-theme-accent-300: var(
+    --color-theme-accent-300,
+    var(--color-accent-300)
+  );
+  --color-theme-accent-400: var(
+    --color-theme-accent-400,
+    var(--color-accent-400)
+  );
+  --color-theme-accent-500: var(
+    --color-theme-accent-500,
+    var(--color-accent-500)
+  );
+  --color-theme-accent-600: var(
+    --color-theme-accent-600,
+    var(--color-accent-600)
+  );
+  --color-theme-accent-700: var(
+    --color-theme-accent-700,
+    var(--color-accent-700)
+  );
+  --color-theme-accent-800: var(
+    --color-theme-accent-800,
+    var(--color-accent-800)
+  );
+  --color-theme-accent-900: var(
+    --color-theme-accent-900,
+    var(--color-accent-900)
+  );
+  --color-theme-accent-950: var(
+    --color-theme-accent-950,
+    var(--color-accent-950)
+  );
+}
+
+/* Assign default contrast color to background utilities */
+@utility bg-primary {
+  /* color: theme(colors.primary-contrast); */
+  @apply text-primary-contrast;
+  @apply hover:text-primary-contrast;
+}
+
+@utility bg-theme-primary {
+  /* color: theme(colors.theme-primary-contrast); */
+  @apply text-theme-primary-contrast;
+  @apply hover:text-theme-primary-contrast;
+}
+
+@utility bg-accent {
+  /* color: theme(colors.accent-contrast); */
+  @apply text-accent-contrast;
+  @apply hover:text-accent-contrast;
+}
+
+@utility bg-theme-accent {
+  /* color: theme(colors.theme-accent-contrast); */
+  @apply text-theme-accent-contrast;
+  @apply hover:text-theme-accent-contrast;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+@layer base {
+  hr {
+    @apply border-gray-200;
+  }
+  button:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}

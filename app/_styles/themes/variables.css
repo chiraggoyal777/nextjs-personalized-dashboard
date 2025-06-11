@@ -1,0 +1,121 @@
+/* don't use --color variables as direct reference in custom classes or styles, all --color variables must be used as reference to @theme variables */
+:root {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --default-font-family: var(--font-sans);
+  /* grays */
+  --color-gray-0: rgb(255 255 255);
+  --color-gray-50: rgb(249 250 251);
+  --color-gray-100: rgb(243 244 246);
+  --color-gray-200: rgb(229 231 235);
+  --color-gray-300: rgb(209 213 219);
+  --color-gray-400: rgb(156 163 175);
+  --color-gray-500: rgb(107 114 128);
+  --color-gray-600: rgb(75 85 99);
+  --color-gray-700: rgb(55 65 81);
+  --color-gray-800: rgb(31 41 55);
+  --color-gray-900: rgb(17 24 39);
+  --color-gray-950: rgb(3 7 18);
+  --color-gray-1000: rgb(0 0 0);
+  --background: var(--color-gray-50);
+  --foreground: var(--color-gray-1000);
+
+  /* State colors */
+  --color-info: rgb(37 99 235);
+  --color-success: rgb(22 163 74);
+  --color-warning: rgb(250 204 21);
+  --color-danger: rgb(220 38 38);
+
+  /* public theme colors / Brand colors */
+  --color-primary-50: rgb(253 244 255);
+  --color-primary-100: rgb(250 232 255);
+  --color-primary-200: rgb(245 208 254);
+  --color-primary-300: rgb(240 171 252);
+  --color-primary-400: rgb(232 121 249);
+  --color-primary-500: rgb(217 70 239);
+  --color-primary-600: rgb(192 38 211);
+  --color-primary-700: rgb(162 28 175);
+  --color-primary-800: rgb(134 25 143);
+  --color-primary-900: rgb(112 26 117);
+  --color-primary-950: rgb(74 4 78);
+  /* default primary, interaction, contrast */
+  --color-primary: var(--color-primary-500);
+  --color-primary-interaction: var(--color-primary-600);
+  --color-primary-contrast: var(--color-gray-0);
+  /* Accent colors */
+  --color-accent-50: rgb(236 254 255);
+  --color-accent-100: rgb(207 250 254);
+  --color-accent-200: rgb(165 243 252);
+  --color-accent-300: rgb(103 232 249);
+  --color-accent-400: rgb(34 211 238);
+  --color-accent-500: rgb(6 182 212);
+  --color-accent-600: rgb(8 145 178);
+  --color-accent-700: rgb(14 116 144);
+  --color-accent-800: rgb(21 94 117);
+  --color-accent-900: rgb(22 78 99);
+  --color-accent-950: rgb(8 51 68);
+
+  /* default accent, interaction, contrast */
+  --color-accent: var(--color-accent-500);
+  --color-accent-interaction: var(--color-accent-600);
+  --color-accent-contrast: var(--color-gray-0);
+}
+
+.dark:root {
+  --color-gray-0: rgb(0 0 0);
+  --color-gray-50: rgb(3 7 18);
+  --color-gray-100: rgb(17 24 39);
+  --color-gray-200: rgb(31 41 55);
+  --color-gray-300: rgb(55 65 81);
+  --color-gray-400: rgb(75 85 99);
+  --color-gray-500: rgb(107 114 128);
+  --color-gray-600: rgb(156 163 175);
+  --color-gray-700: rgb(209 213 219);
+  --color-gray-800: rgb(229 231 235);
+  --color-gray-900: rgb(243 244 246);
+  --color-gray-950: rgb(249 250 251);
+  --color-gray-1000: rgb(255 255 255);
+  --background: var(--color-gray-100);
+  --foreground: var(--color-gray-1000);
+
+  /* State colors */
+  --color-info: rgb(96 165 250);
+  --color-success: rgb(42, 172, 90);
+  --color-warning: rgb(202 138 4);
+  --color-danger: rgb(215 96 96);
+
+  /* Brand colors */
+  --color-primary-50: rgb(74 4 78);
+  --color-primary-100: rgb(112 26 117);
+  --color-primary-200: rgb(134 25 143);
+  --color-primary-300: rgb(162 28 175);
+  --color-primary-400: rgb(192 38 211);
+  --color-primary-500: rgb(217 70 239);
+  --color-primary-600: rgb(232 121 249);
+  --color-primary-700: rgb(240 171 252);
+  --color-primary-800: rgb(245 208 254);
+  --color-primary-900: rgb(250 232 255);
+  --color-primary-950: rgb(253 244 255);
+  /* override light mode primary, interaction, contrast */
+  --color-primary: var(--color-primary-500);
+  --color-primary-interaction: var(--color-primary-600);
+  --color-primary-contrast: var(--color-gray-0);
+
+  /* Accent colors */
+  --color-accent-50: rgb(8 51 68);
+  --color-accent-100: rgb(22 78 99);
+  --color-accent-200: rgb(21 94 117);
+  --color-accent-300: rgb(14 116 144);
+  --color-accent-400: rgb(8 145 178);
+  --color-accent-500: rgb(6 182 212);
+  --color-accent-600: rgb(34 211 238);
+  --color-accent-700: rgb(103 232 249);
+  --color-accent-800: rgb(165 243 252);
+  --color-accent-900: rgb(207 250 254);
+  --color-accent-950: rgb(236 254 255);
+
+  /* default accent, interaction, contrast */
+  --color-accent: var(--color-accent-500);
+  --color-accent-interaction: var(--color-accent-600);
+  --color-accent-contrast: var(--color-gray-0);
+}

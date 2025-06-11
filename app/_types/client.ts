@@ -1,24 +1,10 @@
-export interface ClientTheme {
-  name: string;
-  className: string;
-  colors: {
-    light: {
-      primary: string;
-      secondary: string;
-      accent: string;
-    };
-    dark: {
-      primary: string;
-      secondary: string;
-      accent: string;
-    };
-  };
-}
+import { Theme } from "./theme";
+
 export interface Client {
   id: string;
   name: string;
   email: string;
-  theme: ClientTheme;
+  themeId: Theme["id"];
   metrics: {
     revenue: string;
     users: string;

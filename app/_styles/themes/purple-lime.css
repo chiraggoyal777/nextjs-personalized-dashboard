@@ -1,0 +1,68 @@
+
+/* Purple theme */
+.theme-purple-lime {
+  --color-theme-primary-50: rgb(250 245 255);
+  --color-theme-primary-100: rgb(243 232 255);
+  --color-theme-primary-200: rgb(233 213 255);
+  --color-theme-primary-300: rgb(196 181 253);
+  --color-theme-primary-400: rgb(167 139 250);
+  --color-theme-primary-500: rgb(139 92 246);
+  --color-theme-primary-600: rgb(124 58 237);
+  --color-theme-primary-700: rgb(109 40 217);
+  --color-theme-primary-800: rgb(91 33 182);
+  --color-theme-primary-900: rgb(76 29 149);
+  --color-theme-primary-950: rgb(46 16 101);
+  /* default primary, interaction, contrast */
+  --color-theme-primary: var(--color-theme-primary-500);
+  --color-theme-primary-interaction: var(--color-theme-primary-600);
+  --color-theme-primary-contrast: var(--color-gray-0);
+
+  --color-theme-accent-50: rgb(247 254 231);
+  --color-theme-accent-100: rgb(236 252 203);
+  --color-theme-accent-200: rgb(217 249 157);
+  --color-theme-accent-300: rgb(190 242 100);
+  --color-theme-accent-400: rgb(163 230 53);
+  --color-theme-accent-500: rgb(132 204 22);
+  --color-theme-accent-600: rgb(101 163 13);
+  --color-theme-accent-700: rgb(77 124 15);
+  --color-theme-accent-800: rgb(63 98 18);
+  --color-theme-accent-900: rgb(54 83 20);
+  --color-theme-accent-950: rgb(26 46 5);
+  /* default accent, interaction, contrast */
+  --color-theme-accent: var(--color-theme-accent-500);
+  --color-theme-accent-interaction: var(--color-theme-accent-600);
+  --color-theme-accent-contrast: var(--color-gray-0);
+}
+/* Purple theme dark */
+.theme-purple-lime.dark {
+  --color-theme-primary-50: rgb(46 16 101);
+  --color-theme-primary-100: rgb(76 29 149);
+  --color-theme-primary-200: rgb(91 33 182);
+  --color-theme-primary-300: rgb(109 40 217);
+  --color-theme-primary-400: rgb(124 58 237);
+  --color-theme-primary-500: rgb(139 92 246);
+  --color-theme-primary-600: rgb(167 139 250);
+  --color-theme-primary-700: rgb(196 181 253);
+  --color-theme-primary-800: rgb(233 213 255);
+  --color-theme-primary-900: rgb(243 232 255);
+  --color-theme-primary-950: rgb(250 245 255);
+  /* override light mode primary, interaction, contrast */
+  --color-theme-primary: var(--color-theme-primary-500);
+  --color-theme-primary-interaction: var(--color-theme-primary-600);
+  --color-theme-primary-contrast: var(--color-gray-1000);
+
+  --color-theme-accent-50: rgb(26 46 5);
+  --color-theme-accent-100: rgb(54 83 20);
+  --color-theme-accent-200: rgb(63 98 18);
+  --color-theme-accent-300: rgb(77 124 15);
+  --color-theme-accent-400: rgb(101 163 13);
+  --color-theme-accent-500: rgb(132 204 22);
+  --color-theme-accent-600: rgb(163 230 53);
+  --color-theme-accent-700: rgb(190 242 100);
+  --color-theme-accent-800: rgb(217 249 157);
+  --color-theme-accent-900: rgb(236 252 203);
+  --color-theme-accent-950: rgb(247 254 231);
+  --color-theme-accent: var(--color-theme-accent-500);
+  --color-theme-accent-interaction: var(--color-theme-accent-600);
+  --color-theme-accent-contrast: var(--color-gray-0);
+}

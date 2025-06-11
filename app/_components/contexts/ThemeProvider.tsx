@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import {
+  APP_THEMES,
   applyTheme,
   loadThemePreferences,
   saveThemePreferences,
@@ -10,8 +11,10 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Monitor, Moon, Sun } from "lucide-react";
 import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
+import { Theme } from "@/types/theme";
 
 interface ThemeContextType {
+  allThemes: Theme[];
   theme: string;
   themeMode: ThemeMode;
   isDark: boolean;
@@ -123,9 +126,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const allThemes = [...APP_THEMES];
   return (
     <ThemeContext.Provider
-      value={{ theme, themeMode, isDark, setTheme, setThemeMode, isLoaded }}
+      value={{ allThemes, theme, themeMode, isDark, setTheme, setThemeMode, isLoaded }}
     >
       {children}
 
@@ -136,7 +140,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               variant="outline"
               size="sm"
               className="flex items-center gap-2 p-2"
-              brand={theme.trim() === ""}
+              brand={theme === ""}
               // brand
             >
               {getThemeIcon()}
@@ -148,6 +152,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           isOpen={isDropdownOpen}
           onToggle={() => setIsDropdownOpen(!isDropdownOpen)}
           onClose={() => setIsDropdownOpen(false)}
+          position="top-right"
         >
           <div className="border-b border-gray-200 px-3 py-2 text-xs font-semibold">
             Theme Mode
