@@ -1,6 +1,6 @@
 
-/* Cyan-Pink theme */
-.theme-cyan-pink {
+/* bubblewave theme */
+.theme-bubblewave {
   --color-theme-primary-50: rgb(236 254 255);
   --color-theme-primary-100: rgb(207 250 254);
   --color-theme-primary-200: rgb(165 243 252);
@@ -33,8 +33,8 @@
   --color-theme-accent-interaction: var(--color-theme-accent-600);
   --color-theme-accent-contrast: var(--color-gray-0);
 }
-/* cyan-pink theme dark */
-.theme-cyan-pink.dark {
+/* bubblewave theme dark */
+.theme-bubblewave.dark {
   --color-theme-primary-50: rgb(8 51 68);
   --color-theme-primary-100: rgb(22 78 99);
   --color-theme-primary-200: rgb(21 94 117);

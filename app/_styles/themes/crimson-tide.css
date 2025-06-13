@@ -1,6 +1,6 @@
 
-/* Red-Blue theme */
-.theme-red-blue {
+/* crimson-tide theme */
+.theme-crimson-tide {
   --color-theme-primary-50: rgb(254 242 242);
   --color-theme-primary-100: rgb(254 226 226);
   --color-theme-primary-200: rgb(254 202 202);
@@ -33,8 +33,8 @@
   --color-theme-accent-interaction: var(--color-theme-accent-600);
   --color-theme-accent-contrast: var(--color-gray-0);
 }
-/* red-blue theme dark */
-.theme-red-blue.dark {
+/* crimson-tide theme dark */
+.theme-crimson-tide.dark {
   --color-theme-primary-50: rgb(69 10 10);
   --color-theme-primary-100: rgb(127 29 29);
   --color-theme-primary-200: rgb(153 27 27);
@@ -49,7 +49,7 @@
   /* override light mode primary, interaction, contrast */
   --color-theme-primary: var(--color-theme-primary-500);
   --color-theme-primary-interaction: var(--color-theme-primary-600);
-  --color-theme-primary-contrast: var(--color-gray-0);
+  --color-theme-primary-contrast: var(--color-gray-1000);
 
   --color-theme-accent-50: rgb(23 37 84);
   --color-theme-accent-100: rgb(30 58 138);

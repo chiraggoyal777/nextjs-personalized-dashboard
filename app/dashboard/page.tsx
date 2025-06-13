@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -23,10 +23,31 @@ import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
 
 export default function DashboardPage() {
   const [client, setClient] = useState<Client | null>(null);
-  const [showThemeCustomizer, setShowThemeCustomizer] = useState(false);
+  const [showMoreFeaturesInfo, setShowMoreFeaturesInfo] = useState(false);
   const router = useRouter();
   const { theme, allThemes, setTheme } = useTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const moreFeaturesInfoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showMoreFeaturesInfo && moreFeaturesInfoRef.current) {
+      const offset = 100;
+      const element = moreFeaturesInfoRef.current;
+      const rect = element.getBoundingClientRect();
+
+      const isFullyVisible =
+        rect.top >= offset && rect.bottom <= window.innerHeight;
+
+      if (!isFullyVisible) {
+        const elementTop = rect.top + window.scrollY;
+
+        window.scrollTo({
+          top: elementTop - offset,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [showMoreFeaturesInfo]);
 
   useEffect(() => {
     const currentUser = localStorage.getItem("currentUser");
@@ -157,12 +178,12 @@ export default function DashboardPage() {
                     </div>
                   </DropdownItem>
                 </>
-                {!showThemeCustomizer && (
+                {!showMoreFeaturesInfo && (
                   <>
                     <hr />
                     <DropdownItem
                       onClick={() => (
-                        setShowThemeCustomizer(true), setIsDropdownOpen(false)
+                        setShowMoreFeaturesInfo(true), setIsDropdownOpen(false)
                       )}
                       isSelected={false}
                     >
@@ -198,12 +219,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Theme Customizer */}
-        {showThemeCustomizer && (
-          <div className="relative mb-8">
+        {showMoreFeaturesInfo && (
+          <div className="relative mb-8" ref={moreFeaturesInfoRef}>
             <div className="absolute -top-2 -right-2 w-max">
               <Button
                 className="!bg-gray-0 !text-theme-accent !border-theme-accent !ring-theme-accent/20 !rounded-full !border-4 !p-1"
-                onClick={() => setShowThemeCustomizer(false)}
+                onClick={() => setShowMoreFeaturesInfo(false)}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -355,14 +376,14 @@ export default function DashboardPage() {
       <footer className="bg-background py-4 text-gray-600 dark:text-gray-800">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 sm:flex-row sm:px-6 lg:px-8">
           <p className="text-sm opacity-80">&copy; chiraggoyal777</p>
-          <span className="px-4 opacity-30 hidden sm:block">|</span>
+          <span className="hidden px-4 opacity-30 sm:block">|</span>
           <div className="mt-2 flex sm:mt-0">
             <a
               href="https://github.com/chiraggoyal777"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit my Github repo"
-              className="shrink-0 block p-2 rounded-full hover:bg-theme-primary/20 hover:text-theme-primary transition-colors"
+              className="hover:bg-theme-primary/20 hover:text-theme-primary block shrink-0 rounded-full p-2 transition-colors"
               title="Visit my Github repo"
             >
               <Github className="size-4" />
@@ -372,7 +393,7 @@ export default function DashboardPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Follow me on Codepen"
-              className="shrink-0 block p-2 rounded-full hover:bg-theme-primary/20 hover:text-theme-primary transition-colors"
+              className="hover:bg-theme-primary/20 hover:text-theme-primary block shrink-0 rounded-full p-2 transition-colors"
               title="Follow me on Codepen"
             >
               <Codepen className="size-4" />
@@ -382,7 +403,7 @@ export default function DashboardPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Let's connect on LinkedIn"
-              className="shrink-0 block p-2 rounded-full hover:bg-theme-primary/20 hover:text-theme-primary transition-colors"
+              className="hover:bg-theme-primary/20 hover:text-theme-primary block shrink-0 rounded-full p-2 transition-colors"
               title="Let's connect on LinkedIn"
             >
               <Linkedin className="size-4" />

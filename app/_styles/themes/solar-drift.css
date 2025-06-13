@@ -1,6 +1,6 @@
 
 /* Orange theme */
-.theme-orange-sky {
+.theme-solar-drift {
   --color-theme-primary-50: rgb(255 247 237);
   --color-theme-primary-100: rgb(255 237 213);
   --color-theme-primary-200: rgb(254 215 170);
@@ -34,7 +34,7 @@
   --color-theme-accent-contrast: var(--color-gray-0);
 }
 /* orange theme dark */
-.theme-orange-sky.dark {
+.theme-solar-drift.dark {
   --color-theme-primary-50: rgb(67 20 7);
   --color-theme-primary-100: rgb(124 45 18);
   --color-theme-primary-200: rgb(154 52 18);

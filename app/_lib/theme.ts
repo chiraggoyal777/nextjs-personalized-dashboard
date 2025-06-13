@@ -91,43 +91,43 @@ export const getEffectiveTheme = (themeMode: ThemeMode): "light" | "dark" => {
 
 export const APP_THEMES: Theme[] = [
   {
-    id: "theme-orange-sky",
+    id: "theme-solar-drift",
     label: "Solar Drift",
     colors: ["rgb(249 115 22)", "rgb(14 165 233)"],
     description: "A vibrant sunset blend of orange and sky blue for energetic moods.",
   },
   {
-    id: "theme-purple-lime",
+    id: "theme-neon-orchard",
     label: "Neon Orchard",
     colors: ["rgb(147 51 234)", "rgb(132 204 22)"],
     description: "Bold and playful with a rich purple contrast against bright lime.",
   },
   {
-    id: "theme-emerald-rose",
+    id: "theme-verdant-bloom",
     label: "Verdant Bloom",
     colors: ["rgb(16 185 129)", "rgb(244 63 94)"],
     description: "Elegant and expressive with deep emerald and soft rose tones.",
   },
   {
-    id: "theme-indigo-amber",
+    id: "theme-royal-dawn",
     label: "Royal Dawn",
     colors: ["rgb(79 70 229)", "rgb(251 191 36)"],
     description: "A royal contrast of cool indigo and warm amber highlights.",
   },
   {
-    id: "theme-teal-violet",
+    id: "theme-twilight-oasis",
     label: "Twilight Oasis",
     colors: ["rgb(20 184 166)", "rgb(168 85 247)"],
     description: "Modern and chill with a calm teal base and violet edge.",
   },
   {
-    id: "theme-cyan-pink",
+    id: "theme-bubblewave",
     label: "Bubblewave",
     colors: ["rgb(34 211 238)", "rgb(236 72 153)"],
     description: "A fresh and lively duo of bright cyan and vivid pink.",
   },
   {
-    id: "theme-red-blue",
+    id: "theme-crimson-tide",
     label: "Crimson Tide",
     colors: ["rgb(239 68 68)", "rgb(59 130 246)"],
     description: "Classic contrast with energetic red and dependable blue.",

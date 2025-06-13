@@ -1,6 +1,6 @@
 
-/* Emerald-Rose theme */
-.theme-emerald-rose {
+/* verdant-bloom theme */
+.theme-verdant-bloom {
   --color-theme-primary-50: rgb(236 253 245);
   --color-theme-primary-100: rgb(209 250 229);
   --color-theme-primary-200: rgb(167 243 208);
@@ -33,8 +33,8 @@
   --color-theme-accent-interaction: var(--color-theme-accent-600);
   --color-theme-accent-contrast: var(--color-gray-0);
 }
-/* emerald-rose theme dark */
-.theme-emerald-rose.dark {
+/* verdant-bloom theme dark */
+.theme-verdant-bloom.dark {
   --color-theme-primary-50: rgb(2 44 34);
   --color-theme-primary-100: rgb(6 78 59);
   --color-theme-primary-200: rgb(6 95 70);

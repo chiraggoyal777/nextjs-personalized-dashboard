@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { getClientByEmail } from "@/lib/clients";
 import { Codepen, Github, Linkedin } from "lucide-react";
+import DemoCredentials from "@/components/ui/DemoCredentials";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -72,7 +73,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@orangecorp.com or admin@purpleind.com"
+                placeholder=""
                 className={`focus:ring-primary focus:border-primary bg-gray-0 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-1 focus:outline-none ${error ? "!border-danger !ring-danger" : ""}`}
                 required
               />
@@ -90,7 +91,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="password"
+                placeholder=""
                 className={`focus:ring-primary focus:border-primary bg-gray-0 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-1 focus:outline-none ${error ? "!border-danger !ring-danger" : ""}`}
                 required
               />
@@ -110,12 +111,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Demo Credentials:</p>
-            <p>Orange: admin@orangecorp.com</p>
-            <p>Purple: admin@purpleind.com</p>
-            <p>Password: nW7jK39bPqZ</p>
-          </div>
+          <DemoCredentials />
 
           <hr className="mt-6 mb-4" />
           <div className="text-center flex justify-center text-gray-600">

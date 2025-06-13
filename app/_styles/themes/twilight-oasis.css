@@ -1,6 +1,6 @@
 
-/* Teal-Violet theme */
-.theme-teal-violet {
+/* twilight-oasis theme */
+.theme-twilight-oasis {
   --color-theme-primary-50: rgb(240 253 250);
   --color-theme-primary-100: rgb(204 251 241);
   --color-theme-primary-200: rgb(153 246 228);
@@ -33,8 +33,8 @@
   --color-theme-accent-interaction: var(--color-theme-accent-600);
   --color-theme-accent-contrast: var(--color-gray-0);
 }
-/* teal-violet theme dark */
-.theme-teal-violet.dark {
+/* twilight-oasis theme dark */
+.theme-twilight-oasis.dark {
   --color-theme-primary-50: rgb(4 47 46);
   --color-theme-primary-100: rgb(19 78 74);
   --color-theme-primary-200: rgb(17 94 89);

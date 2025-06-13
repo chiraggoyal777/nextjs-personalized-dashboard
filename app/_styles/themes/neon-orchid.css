@@ -1,6 +1,6 @@
 
-/* Purple theme */
-.theme-purple-lime {
+/* neon-orchard theme */
+.theme-neon-orchard {
   --color-theme-primary-50: rgb(250 245 255);
   --color-theme-primary-100: rgb(243 232 255);
   --color-theme-primary-200: rgb(233 213 255);
@@ -33,8 +33,8 @@
   --color-theme-accent-interaction: var(--color-theme-accent-600);
   --color-theme-accent-contrast: var(--color-gray-0);
 }
-/* Purple theme dark */
-.theme-purple-lime.dark {
+/* neon-orchard theme dark */
+.theme-neon-orchard.dark {
   --color-theme-primary-50: rgb(46 16 101);
   --color-theme-primary-100: rgb(76 29 149);
   --color-theme-primary-200: rgb(91 33 182);

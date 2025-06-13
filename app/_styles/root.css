@@ -99,7 +99,7 @@
   /* override light mode primary, interaction, contrast */
   --color-primary: var(--color-primary-500);
   --color-primary-interaction: var(--color-primary-600);
-  --color-primary-contrast: var(--color-gray-0);
+  --color-primary-contrast: var(--color-gray-1000);
 
   /* Accent colors */
   --color-accent-50: rgb(8 51 68);
