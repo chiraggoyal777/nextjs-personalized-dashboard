@@ -8,25 +8,16 @@ interface DropdownProps {
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
-  position?: "bottom-center" | "bottom-right" | "bottom-left" | "top-center" | "top-right" | "top-left"
+  position?: "bottom-center" | "bottom-right" | "bottom-left" | "top-center" | "top-right" | "top-left";
+  customWidthClasses?: string;
 }
 
-function Dropdown({
-  trigger,
-  children,
-  isOpen,
-  onToggle,
-  onClose,
-  position = "bottom-center"
-}: DropdownProps) {
+function Dropdown({ trigger, children, isOpen, onToggle, onClose, position = "bottom-center", customWidthClasses }: DropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -49,19 +40,12 @@ function Dropdown({
   }, [isOpen, onClose]);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div
+      className="relative"
+      ref={dropdownRef}
+    >
       <div onClick={onToggle}>{trigger}</div>
-      {isOpen && (
-        <div className={`bg-gray-0 absolute z-50 my-2 w-48 rounded-lg py-1 text-gray-900 shadow-lg
-          ${position.includes("center") ? "left-1/2 -translate-x-1/2" : ""}
-          ${position.includes("right") ? "right-0" : ""}
-          ${position.includes("left") ? "left-0" : ""}
-          ${position.includes("top") ? "bottom-full" : ""}
-          ${position.includes("bottom") ? "top-full" : ""}
-        `}>
-          {children}
-        </div>
-      )}
+      {isOpen && <div className={`bg-gray-0 absolute z-50 my-2 max-h-[calc(100vh-4rem)] overflow-auto rounded-lg py-1 text-gray-900 shadow-lg ${customWidthClasses ? customWidthClasses : "w-48"} ${position.includes("center") ? "left-1/2 -translate-x-1/2" : ""} ${position.includes("right") ? "right-0" : ""} ${position.includes("left") ? "left-0" : ""} ${position.includes("top") ? "bottom-full" : ""} ${position.includes("bottom") ? "top-full" : ""} `}>{children}</div>}
     </div>
   );
 }
@@ -72,18 +56,14 @@ interface DropdownItemProps {
   isSelected?: boolean;
 }
 
-export function DropdownItem({
-  children,
-  onClick,
-  isSelected,
-}: DropdownItemProps) {
+export function DropdownItem({ children, onClick, isSelected }: DropdownItemProps) {
   return (
     <button
-      className="flex w-full items-center justify-between px-4 py-2 text-left text-sm transition-colors hover:bg-gray-200"
+      className="flex w-full items-center justify-between gap-2 px-4 py-2.5 text-left text-sm leading-tight transition-colors hover:bg-gray-200"
       onClick={onClick}
     >
-      <span>{children}</span>
-      {isSelected && <Check className="h-4 w-4" />}
+      <span className="min-w-0 grow">{children}</span>
+      {isSelected && <Check className="h-4 w-4 shrink-0" />}
     </button>
   );
 }

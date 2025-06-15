@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ClipboardCopy, Check } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import { ClipboardCopy, Check } from "lucide-react";
 
 type CopyItem = {
   id: string;
@@ -17,11 +17,9 @@ const CopyField: React.FC<CopyFieldProps> = ({ label, item, copiedId, onCopy }) 
   const isCopied = copiedId === item.id;
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-1">
-      {label && <span className="text-gray-600 sr-only">{label}</span>}
-      <span className="font-mono text-sm text-black bg-gray-100 px-2 py-1 rounded">
-        {item.value}
-      </span>
+    <div className="mt-1 flex items-center justify-center gap-2">
+      {label && <span className="sr-only text-gray-600">{label}</span>}
+      <span className="rounded bg-gray-100 px-2 py-1 font-mono text-sm text-black">{item.value}</span>
       <button
         onClick={() => onCopy(item.id, item.value)}
         className="text-blue-500 hover:text-blue-700 focus:outline-none"
@@ -50,7 +48,7 @@ const DemoCredentials: React.FC = () => {
         setCopiedId(null);
       }, 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -61,9 +59,9 @@ const DemoCredentials: React.FC = () => {
   }, []);
 
   const items: CopyItem[] = [
-    { id: 'email1', value: 'admin@northwindcorp.io' },
-    { id: 'email2', value: 'admin@orbitlabs.com' },
-    { id: 'password', value: 'nW7jK39bPqZ' },
+    { id: "email1", value: "admin@northwindcorp.io" },
+    { id: "email2", value: "admin@orbitlabs.com" },
+    { id: "password", value: "nW7jK39bPqZ" },
   ];
 
   return (
@@ -72,7 +70,7 @@ const DemoCredentials: React.FC = () => {
       {items.map((item) => (
         <CopyField
           key={item.id}
-          label={item.id.includes('email') ? 'Email:' : 'Password:'}
+          label={item.id.includes("email") ? "Email:" : "Password:"}
           item={item}
           copiedId={copiedId}
           onCopy={handleCopy}

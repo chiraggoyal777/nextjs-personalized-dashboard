@@ -2,10 +2,10 @@ import { Client } from "@/types/client";
 
 export const clients: Client[] = [
   {
-    id: "1",
+    id: "client-K8X919",
     name: "Northwind Corp",
     email: "admin@northwindcorp.io",
-    themeId: "theme-bubblewave",
+    themeId: "theme-system-06",
     metrics: {
       revenue: "$125,430",
       users: "12,543",
@@ -14,10 +14,10 @@ export const clients: Client[] = [
     },
   },
   {
-    id: "2",
+    id: "client-OX01SK",
     name: "Orbit Labs",
     email: "admin@orbitlabs.com",
-    themeId: "theme-neon-orchard",
+    themeId: "theme-system-02",
     metrics: {
       revenue: "$89,320",
       users: "8,932",

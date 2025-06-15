@@ -4,7 +4,7 @@ export interface Client {
   id: string;
   name: string;
   email: string;
-  themeId: Theme["id"];
+  themeId: Theme["id"] | null;
   metrics: {
     revenue: string;
     users: string;

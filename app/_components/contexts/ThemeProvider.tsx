@@ -1,23 +1,21 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import {
-  APP_THEMES,
-  applyTheme,
-  loadThemePreferences,
-  saveThemePreferences,
-} from "@/lib/theme";
+import { SYSTEM_THEMES, applyTheme, loadThemePreferences, saveThemePreferences } from "@/lib/theme";
 import { Button } from "@/components/ui/Button";
 import { Monitor, Moon, Sun } from "lucide-react";
 import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
-import { Theme, ThemeMode } from "@/types/theme";
+import { Theme, GeneratedTheme, ThemeMode, ThemeStore } from "@/types/theme";
+import toast from "react-hot-toast";
 
 interface ThemeContextType {
   allThemes: Theme[];
-  theme: string;
+  savedThemes: GeneratedTheme[];
+  setSavedThemes: React.Dispatch<React.SetStateAction<GeneratedTheme[]>>;
+  theme: ThemeStore;
   themeMode: ThemeMode;
   isDark: boolean;
-  setTheme: (theme: string) => void;
+  setTheme: (theme: ThemeStore) => void;
   setThemeMode: (mode: ThemeMode) => void;
   isLoaded: boolean;
 }
@@ -25,11 +23,51 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState("");
+  const [savedThemes, setSavedThemes] = useState<GeneratedTheme[]>([]);
+  const [theme, setThemeState] = useState<ThemeStore>(null);
   const [themeMode, setThemeModeState] = useState<ThemeMode>("system");
   const [isDark, setIsDark] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const customThemes: Theme[] = savedThemes.map(({ id, label, colors, description, cssClassName, isUserCreated }) => ({
+    id,
+    label,
+    colors,
+    description,
+    cssClassName,
+    isUserCreated,
+  }));
+  const allThemes = [...SYSTEM_THEMES, ...customThemes];
+  useEffect(() => {
+    reloadThemes();
+  }, []);
+
+  function injectSingleThemeCSS() {
+    const themeId = theme?.id;
+    if (themeId) {
+      const styleId = `style-theme-user`;
+      let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
+
+      if (!styleEl) {
+        styleEl = document.createElement("style");
+        styleEl.id = styleId;
+        document.head.appendChild(styleEl);
+      }
+
+      styleEl.innerHTML = savedThemes.find((item) => item.id === themeId)?.css || "";
+    }
+  }
+
+  const reloadThemes = () => {
+    const themes = JSON.parse(localStorage.getItem("customThemes") || "[]");
+    setSavedThemes(themes);
+  };
+
+  useEffect(() => {
+    localStorage.setItem("customThemes", JSON.stringify(savedThemes));
+    injectSingleThemeCSS();
+  }, [savedThemes, theme]);
 
   // Listen to system theme changes
   useEffect(() => {
@@ -45,14 +83,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     };
 
     mediaQuery.addEventListener("change", handleSystemThemeChange);
-    return () =>
-      mediaQuery.removeEventListener("change", handleSystemThemeChange);
+    return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
   }, [themeMode, theme]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const { theme: savedTheme, themeMode: savedThemeMode } =
-        loadThemePreferences();
+      const { theme: savedTheme, themeMode: savedThemeMode } = loadThemePreferences();
 
       setThemeState(savedTheme);
       setThemeModeState(savedThemeMode);
@@ -60,9 +96,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       // Determine if dark mode should be active
       let shouldBeDark = false;
       if (savedThemeMode === "system") {
-        shouldBeDark = window.matchMedia(
-          "(prefers-color-scheme: dark)",
-        ).matches;
+        shouldBeDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       } else {
         shouldBeDark = savedThemeMode === "dark";
       }
@@ -74,10 +108,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const setTheme = (newTheme: string) => {
-    setThemeState(newTheme);
-    applyTheme(newTheme, isDark);
-    saveThemePreferences(newTheme, themeMode);
+  const setTheme = (theme: ThemeStore) => {
+    setThemeState(theme);
+    applyTheme(theme, isDark);
+    saveThemePreferences(theme, themeMode);
+    toast(`${theme ? theme.label : "Brand"} theme applied successfully!`);
   };
 
   const setThemeMode = (newMode: ThemeMode) => {
@@ -125,10 +160,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const allThemes = [...APP_THEMES];
   return (
     <ThemeContext.Provider
-      value={{ allThemes, theme, themeMode, isDark, setTheme, setThemeMode, isLoaded }}
+      value={{
+        allThemes,
+        savedThemes,
+        setSavedThemes,
+        theme,
+        themeMode,
+        isDark,
+        setTheme,
+        setThemeMode,
+        isLoaded,
+      }}
     >
       {children}
 
@@ -139,13 +183,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               variant="outline"
               size="sm"
               className="flex items-center gap-2 p-2"
-              brand={theme === ""}
-              // brand
+              brand={theme === null}
             >
               {getThemeIcon()}
-              <span className="hidden text-xs sm:inline">
-                {getThemeLabel()}
-              </span>
+              <span className="hidden text-xs sm:inline">{getThemeLabel()}</span>
             </Button>
           }
           isOpen={isDropdownOpen}
@@ -153,9 +194,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           onClose={() => setIsDropdownOpen(false)}
           position="top-right"
         >
-          <div className="border-b border-gray-200 px-3 py-2 text-xs font-semibold">
-            Theme Mode
-          </div>
+          <div className="border-b border-gray-200 px-3 py-2 text-xs font-semibold">Theme Mode</div>
 
           <DropdownItem
             onClick={() => setThemeMode("system")}
