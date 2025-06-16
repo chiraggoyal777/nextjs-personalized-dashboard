@@ -24,6 +24,8 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
+    toast.dismiss();
+    toast("You've been logged out!");
     router.push("/");
   };
 

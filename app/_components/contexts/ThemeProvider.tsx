@@ -15,7 +15,7 @@ interface ThemeContextType {
   theme: ThemeStore;
   themeMode: ThemeMode;
   isDark: boolean;
-  setTheme: (theme: ThemeStore) => void;
+  setTheme: (theme: ThemeStore, showToast?: boolean) => void;
   setThemeMode: (mode: ThemeMode) => void;
   isLoaded: boolean;
 }
@@ -108,11 +108,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const setTheme = (theme: ThemeStore) => {
-    setThemeState(theme);
-    applyTheme(theme, isDark);
-    saveThemePreferences(theme, themeMode);
-    toast(`${theme ? theme.label : "Brand"} theme applied successfully!`);
+  const setTheme = (newTheme: ThemeStore, showToast = true) => {
+    setThemeState(newTheme);
+    applyTheme(newTheme, isDark);
+    saveThemePreferences(newTheme, themeMode);
+    if (showToast) toast(`${newTheme ? newTheme.label : "Brand"} theme applied!`);
   };
 
   const setThemeMode = (newMode: ThemeMode) => {

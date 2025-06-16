@@ -26,7 +26,7 @@ export default function LoginPage() {
     if (currentUser) {
       router.push("/dashboard");
     } else {
-      setTheme(null);
+      setTheme(null, false);
     }
   }, [router, setTheme]);
 
