@@ -1,4 +1,4 @@
-import { Theme, ThemePalette } from "@/types/theme";
+import { ThemePalette } from "@/types/theme";
 
 type RGB = { r: number; g: number; b: number };
 type Palette = { [shade: string]: string };
