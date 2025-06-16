@@ -61,6 +61,7 @@
   --color-theme-accent-800: rgb(217 249 157);
   --color-theme-accent-900: rgb(236 252 203);
   --color-theme-accent-950: rgb(247 254 231);
+  /* override light mode accent, interaction, contrast */
   --color-theme-accent: var(--color-theme-accent-500);
   --color-theme-accent-interaction: var(--color-theme-accent-600);
   --color-theme-accent-contrast: var(--color-gray-0);

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, CSSProperties, useMemo } from "react";
-import { Palette, Save, Eye, Trash2, Download, TrendingUp, DollarSign, Users, Code, Edit, Loader } from "lucide-react";
+import { Palette, Save, Eye, Trash2, Download, TrendingUp, DollarSign, Users, Code, Edit, Loader as LoaderIcon } from "lucide-react";
 import Toggle, { TogglePreview } from "@/components/ui/Toggle";
 import Radio, { RadioPreview } from "@/components/ui/Radio";
 import Checkbox, { CheckboxPreview } from "@/components/ui/Checkbox";
@@ -12,6 +12,7 @@ import { useTheme } from "@/components/contexts/ThemeProvider";
 import { useClient } from "@/components/contexts/ClientProvider";
 import toast from "react-hot-toast";
 import { generatePalette, generateThemeCSS, getContrastRatio } from "@/lib/helpers";
+import Loader from "@/components/ui/Loader";
 
 const INITIAL_PRIMARY_COLOR = "#d946ef";
 const INITIAL_PRIMARY_CONTRAST_COLOR = "white";
@@ -126,9 +127,8 @@ const CustomiseThemePage = () => {
     toast.success(themeData.label + (editingThemeId ? " theme updated!" : " theme saved!"));
 
     if (willApplySameTheme) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       const { id, label, colors, description, isUserCreated, cssClassName } = themeData;
-      setTheme({ id, label, colors, description, isUserCreated, cssClassName });
+      setTheme({ id, label, colors, description, isUserCreated, cssClassName }, true, 1000);
     }
     /* resetForm();
     setEditingThemeId(null);
@@ -303,6 +303,7 @@ const CustomiseThemePage = () => {
     );
   };
 
+  if (isLoading) return <Loader contained />;
   return (
     <div className="space-y-6">
       <Breadcrumb editingThemeId={editingThemeId} />
@@ -562,7 +563,7 @@ const CustomiseThemePage = () => {
                 className="bg-theme-primary text-theme-primary-contrast hover:bg-theme-primary-interaction flex items-center gap-2 rounded-md px-4 py-2 transition-colors"
                 disabled={isSaving}
               >
-                {isSaving ? <Loader className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {isSaving ? <LoaderIcon className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {editingThemeId ? "Update" : "Save"} Theme
               </button>
               <button

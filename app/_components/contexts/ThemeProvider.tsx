@@ -15,7 +15,7 @@ interface ThemeContextType {
   theme: ThemeStore;
   themeMode: ThemeMode;
   isDark: boolean;
-  setTheme: (theme: ThemeStore, showToast?: boolean) => void;
+  setTheme: (theme: ThemeStore, showToast?: boolean, delay?: number) => void;
   setThemeMode: (mode: ThemeMode) => void;
   isLoaded: boolean;
 }
@@ -108,11 +108,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const setTheme = (newTheme: ThemeStore, showToast = true) => {
+  const setTheme = async (newTheme: ThemeStore, showToast = true, delay = 0) => {
     setThemeState(newTheme);
     applyTheme(newTheme, isDark);
     saveThemePreferences(newTheme, themeMode);
-    if (showToast) toast(`${newTheme ? newTheme.label : "Brand"} theme applied!`);
+    if (showToast) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      if (!newTheme) {
+        toast.dismiss();
+      }
+      toast(`${newTheme ? newTheme.label : "Brand"} theme applied!`);
+    }
   };
 
   const setThemeMode = (newMode: ThemeMode) => {
@@ -180,13 +186,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         <Dropdown
           trigger={
             <Button
-              variant="outline"
+              variant="gray"
               size="sm"
               className="flex items-center gap-2 p-2"
               brand={theme === null}
             >
               {getThemeIcon()}
-              <span className="hidden text-xs sm:inline">{getThemeLabel()}</span>
+              <span className="sr-only">{getThemeLabel()}</span>
             </Button>
           }
           isOpen={isDropdownOpen}

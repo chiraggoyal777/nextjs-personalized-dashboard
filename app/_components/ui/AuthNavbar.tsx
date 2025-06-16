@@ -4,7 +4,7 @@ import { useTheme } from "@/components/contexts/ThemeProvider";
 import { Button } from "@/components/ui/Button";
 import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
 import { Theme } from "@/types/theme";
-import { Loader, LogOut, PaintbrushVertical, Palette, User, WandSparkles } from "lucide-react";
+import { CircleUser, Edit3, Loader, LogOut, PaintbrushVertical, Palette, WandSparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -21,8 +21,11 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
 
   const { theme, allThemes, setTheme } = useTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await new Promise((resolve) => setTimeout(resolve, 500));
     localStorage.removeItem("currentUser");
     toast.dismiss();
     toast("You've been logged out!");
@@ -46,7 +49,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
     setApplyingThemeId(theme.id);
 
     // Optional delay to simulate async task
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // If this is not the latest request, exit silently
     if (requestId !== requestTokenRef.current) return;
@@ -98,7 +101,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     <div
-                      className="relative size-4 shrink-0 rounded-full rounded-br-none bg-gradient-to-br from-[var(--color-stop-1)] to-[var(--color-stop-2)]"
+                      className="relative size-4 shrink-0 rounded-full bg-gradient-to-br from-[var(--color-stop-1)] to-[var(--color-stop-2)]"
                       style={
                         {
                           "--color-stop-1": item.colors[0],
@@ -106,7 +109,9 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                         } as React.CSSProperties
                       }
                     >
-                      <User className="text-theme-primary-contrast absolute right-0 bottom-0 h-2 w-2" />
+                      <div className="absolute -right-[1px] -bottom-[1px]">
+                        <CircleUser className="h-2 w-2 rounded-full bg-gray-50" />
+                      </div>
                     </div>
                     <span className="grow truncate">{item.label}</span>
                     {applyingThemeId === item.id && <Loader className="h-4 w-4 shrink-0 animate-spin" />}
@@ -164,7 +169,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
               <>
                 <hr />
                 <DropdownItem
-                  onClick={() => (router.push("/customise-theme"), setIsDropdownOpen(false))}
+                  onClick={() => (router.push(`/customise-theme`), setIsDropdownOpen(false))}
                   isSelected={false}
                 >
                   <div className="flex items-center gap-3">
@@ -174,6 +179,19 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                     </span>
                   </div>
                 </DropdownItem>
+                {activeTheme && activeTheme.isUserCreated && (
+                  <DropdownItem
+                    onClick={() => (router.push(`/customise-theme?id=${activeTheme.id}`), setIsDropdownOpen(false))}
+                    isSelected={false}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Edit3 className="text-theme-primary size-4" />
+                      <span className="from-theme-primary to-theme-accent bg-gradient-to-r bg-clip-text text-transparent">
+                        <span>Modify {activeTheme.label}</span>
+                      </span>
+                    </div>
+                  </DropdownItem>
+                )}
               </>
             </Dropdown>
 
@@ -181,8 +199,9 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
               variant="gray"
               size="sm"
               onClick={handleLogout}
+              disabled={isLoggingOut}
             >
-              <LogOut className="mr-2 size-4" />
+              {isLoggingOut ? <Loader className="mr-2 size-4 animate-spin" /> : <LogOut className="mr-2 size-4" />}
               <span className="-my-1">Logout</span>
             </Button>
           </div>

@@ -33,13 +33,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <ClientProvider>
-      <div className="min-h-screen">
+      <div className="min-h-screen flex flex-col">
         {/* Navbar */}
         <AuthNavbar
           isShowMoreFeaturesVisible={showMoreFeaturesInfo}
           onShowMoreFeaturesClick={() => setShowMoreFeaturesInfo(true)}
         />
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 w-full grow">
           {/* Welcome Section */}
           <ClientInfo />
 
@@ -80,7 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </div>
 
-        <footer className="bg-background pt-4 pb-10 text-gray-600 dark:text-gray-800">
+        <footer className="bg-background pt-4 pb-10 text-gray-600 dark:text-gray-800 w-full">
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 sm:flex-row sm:px-6 lg:px-8">
             <p className="text-sm opacity-80">&copy; chiraggoyal777</p>
             <span className="hidden px-4 opacity-30 sm:block">|</span>
@@ -90,7 +90,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Visit my Github repo"
-                className="hover:bg-theme-primary/20 hover:text-theme-primary block shrink-0 rounded-full p-2 transition-colors"
+                className="hover:bg-theme-accent hover:text-theme-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
                 title="Visit my Github repo"
               >
                 <Github className="size-4" />
@@ -100,7 +100,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow me on Codepen"
-                className="hover:bg-theme-primary/20 hover:text-theme-primary block shrink-0 rounded-full p-2 transition-colors"
+                className="hover:bg-theme-accent hover:text-theme-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
                 title="Follow me on Codepen"
               >
                 <Codepen className="size-4" />
@@ -110,7 +110,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Let's connect on LinkedIn"
-                className="hover:bg-theme-primary/20 hover:text-theme-primary block shrink-0 rounded-full p-2 transition-colors"
+                className="hover:bg-theme-accent hover:text-theme-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
                 title="Let's connect on LinkedIn"
               >
                 <Linkedin className="size-4" />

@@ -183,6 +183,7 @@ export const generateThemeCSS = ({ cssClassName, primaryColor, primaryContrast, 
     css += `  --color-theme-accent-${shade}: ${color};\n`;
   });
 
+  css += `  /* override light mode accent, interaction, contrast */\n`;
   css += `  --color-theme-accent: var(--color-theme-accent-500);\n`;
   css += `  --color-theme-accent-interaction: var(--color-theme-accent-600);\n`;
   css += `  --color-theme-accent-contrast: var(--color-gray-${accentContrast.dark === "white" ? "1000" : "0"});\n`;

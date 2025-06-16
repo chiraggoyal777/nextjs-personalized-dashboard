@@ -25,8 +25,6 @@ export default function LoginPage() {
     const currentUser = localStorage.getItem("currentUser");
     if (currentUser) {
       router.push("/dashboard");
-    } else {
-      setTheme(null, false);
     }
   }, [router, setTheme]);
 
@@ -134,7 +132,7 @@ export default function LoginPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit my Github repo"
-              className="hover:bg-primary/20 hover:text-primary block shrink-0 rounded-full p-2 transition-colors"
+              className="hover:bg-accent hover:text-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
               title="Visit my Github repo"
             >
               <Github className="size-4" />
@@ -144,7 +142,7 @@ export default function LoginPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Follow me on Codepen"
-              className="hover:bg-primary/20 hover:text-primary block shrink-0 rounded-full p-2 transition-colors"
+              className="hover:bg-accent hover:text-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
               title="Follow me on Codepen"
             >
               <Codepen className="size-4" />
@@ -154,7 +152,7 @@ export default function LoginPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Let's connect on LinkedIn"
-              className="hover:bg-primary/20 hover:text-primary block shrink-0 rounded-full p-2 transition-colors"
+              className="hover:bg-accent hover:text-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
               title="Let's connect on LinkedIn"
             >
               <Linkedin className="size-4" />

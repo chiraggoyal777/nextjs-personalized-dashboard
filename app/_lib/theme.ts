@@ -142,4 +142,12 @@ export const SYSTEM_THEMES: Theme[] = [
     description: "Classic contrast with energetic red and dependable blue.",
     isUserCreated: false,
   },
+  {
+    id: "theme-system-08",
+    cssClassName: "theme-caribbean-beach",
+    label: "Caribbean Beach",
+    colors: ["rgb(210 180 140)", "rgb(0 178 202)"],
+    description: "A refreshing blend of soft sand tones and sunlit shores of a tropical paradise.",
+    isUserCreated: false,
+  },
 ];
