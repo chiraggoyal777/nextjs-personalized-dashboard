@@ -16,9 +16,8 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname(); // current path user is on
   const [client, setClient] = useState<Client | null>(null);
-  const { theme: activeTheme, setTheme } = useTheme();
+  const { setTheme, allThemes } = useTheme();
 
-  console.log(activeTheme);
   useEffect(() => {
     const currentUser = localStorage.getItem("currentUser");
 
@@ -30,12 +29,11 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
     }
 
     const userData = JSON.parse(currentUser) as Client;
-    userData.themeId = activeTheme !== null ? activeTheme.id : userData.themeId;
-    console.log(userData);
     setClient(userData);
-    // Apply client theme
-    setTheme(activeTheme, false);
 
+    const foundTheme = allThemes.find((item) => item.id === userData.themeId) || null;
+    // Apply client theme
+    setTheme(foundTheme, false);
   }, [pathname, router]);
 
   if (!client) return <Loader />;

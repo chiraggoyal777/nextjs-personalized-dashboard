@@ -25,6 +25,8 @@ export default function LoginPage() {
     const currentUser = localStorage.getItem("currentUser");
     if (currentUser) {
       router.push("/dashboard");
+    } else {
+      setTheme(null, false);
     }
   }, [router, setTheme]);
 
@@ -84,12 +86,14 @@ export default function LoginPage() {
               </label>
               <input
                 id="email"
+                name="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder=""
                 className={`focus:ring-primary focus:border-primary bg-gray-0 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-1 focus:outline-none ${error ? "!border-danger !ring-danger" : ""}`}
                 required
+                autoComplete="email"
               />
             </div>
 
@@ -102,6 +106,7 @@ export default function LoginPage() {
               </label>
               <input
                 id="password"
+                name="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

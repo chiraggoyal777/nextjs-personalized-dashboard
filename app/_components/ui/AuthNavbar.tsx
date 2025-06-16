@@ -143,7 +143,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
               <>
                 <hr />
                 <DropdownItem
-                  onClick={() => setTheme(null)}
+                  onClick={() => theme !== null && !applyingThemeId && (toast.dismiss(), setTheme(null))}
                   isSelected={theme === null}
                 >
                   <div className="flex items-center gap-3">

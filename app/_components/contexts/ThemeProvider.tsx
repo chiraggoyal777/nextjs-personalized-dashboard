@@ -41,6 +41,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const allThemes = [...SYSTEM_THEMES, ...customThemes];
   useEffect(() => {
     reloadThemes();
+
+    // initialise with preferences if does not exist
+    if (!localStorage.getItem("themeMode")) {
+      saveThemePreferences(theme, themeMode);
+    }
   }, []);
 
   function injectSingleThemeCSS() {
@@ -114,9 +119,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     saveThemePreferences(newTheme, themeMode);
     if (showToast) {
       await new Promise((resolve) => setTimeout(resolve, delay));
-      if (!newTheme) {
-        toast.dismiss();
-      }
       toast(`${newTheme ? newTheme.label : "Brand"} theme applied!`);
     }
   };
