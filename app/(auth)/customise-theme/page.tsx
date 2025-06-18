@@ -239,8 +239,12 @@ const CustomiseThemePage = () => {
     toast.success(themeData.label + (editingThemeId ? " theme updated!" : " theme saved!"));
 
     if (willApplySameTheme) {
-      setTheme(themeData, true, 1000);
+      setTheme(themeData, true, 2000);
     }
+    setEditingThemeId(null);
+    resetForm();
+    setIsSaving(false);
+    fetchCurrentThemeToEdit();
     router.push("/dashboard");
   };
 
@@ -784,10 +788,10 @@ const CustomiseThemePage = () => {
               {/* Visual */}
               {previewType === "visual" && (
                 <ThemePreview
-                  primaryColor={primaryColor}
-                  primaryShades={{ light: getShades(primaryColor.light.DEFAULT), dark: getShades(primaryColor.light.DEFAULT) }}
-                  accentColor={accentColor}
-                  accentShades={{ light: getShades(accentColor.light.DEFAULT), dark: getShades(accentColor.light.DEFAULT) }}
+                  primaryColor={primaryColor[previewThemeMode]}
+                  primaryShades={getShades(primaryColor[previewThemeMode].DEFAULT)}
+                  accentColor={accentColor[previewThemeMode]}
+                  accentShades={getShades(accentColor[previewThemeMode].DEFAULT)}
                   previewThemeMode={previewThemeMode}
                 />
               )}

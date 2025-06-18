@@ -18,7 +18,7 @@ export type ThemeStore = Theme & {
   createdAt: string; // ISO timestamp
 };
 
-type PaletteState = {
+export type PaletteState = {
   DEFAULT: string;
   interaction: string;
   contrast: string;

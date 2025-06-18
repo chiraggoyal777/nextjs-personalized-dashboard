@@ -4,15 +4,15 @@ import { CheckboxPreview } from "@/components/ui/Checkbox";
 import { InputPreview } from "@/components/ui/Input";
 import { RadioGroupPreview } from "@/components/ui/RadioGroup";
 import { TogglePreview } from "@/components/ui/Toggle";
-import { ShadesPaletteGroup, ThemePalette } from "@/types/theme";
+import { PaletteState, ShadesPalette, ThemePalette } from "@/types/theme";
 import { DollarSign, TrendingUp, Users } from "lucide-react";
 import React, { CSSProperties } from "react";
 
 interface ThemPreviewProps {
-  primaryColor: ThemePalette;
-  primaryShades: ShadesPaletteGroup;
-  accentColor: ThemePalette;
-  accentShades: ShadesPaletteGroup;
+  primaryColor: PaletteState;
+  primaryShades: ShadesPalette;
+  accentColor: PaletteState;
+  accentShades: ShadesPalette;
   previewThemeMode: keyof ThemePalette;
 }
 const ThemePreview = (props: ThemPreviewProps) => {
@@ -23,12 +23,12 @@ const ThemePreview = (props: ThemPreviewProps) => {
       className={`tp ${previewThemeMode === "dark" ? "tp-dark" : ""}`}
       style={
         {
-          "--color-theme-primary": primaryColor[previewThemeMode].DEFAULT,
-          "--color-theme-primary-interaction": primaryColor[previewThemeMode].interaction,
-          "--color-theme-primary-contrast": primaryColor[previewThemeMode].contrast,
-          "--color-theme-accent": accentColor[previewThemeMode].DEFAULT,
-          "--color-theme-accent-interaction": accentColor[previewThemeMode].interaction,
-          "--color-theme-accent-contrast": accentColor[previewThemeMode].contrast,
+          "--color-theme-primary": primaryColor.DEFAULT,
+          "--color-theme-primary-interaction": primaryColor.interaction,
+          "--color-theme-primary-contrast": primaryColor.contrast,
+          "--color-theme-accent": accentColor.DEFAULT,
+          "--color-theme-accent-interaction": accentColor.interaction,
+          "--color-theme-accent-contrast": accentColor.contrast,
         } as CSSProperties
       }
     >
@@ -57,23 +57,21 @@ const ThemePreview = (props: ThemPreviewProps) => {
                 Primary
               </Button>
             </div>
-            {primaryShades && (
-              <div className="grid grid-cols-5 gap-1">
-                {Object.entries(previewThemeMode === "dark" ? primaryShades.dark : primaryShades.light).map(([shade, color]) => (
-                  <div
-                    key={shade}
-                    className="flex h-8 items-center justify-center rounded text-xs font-medium"
-                    style={{
-                      backgroundColor: color,
-                      color: previewThemeMode === "dark" ? primaryColor.dark.contrast : primaryColor.light.contrast,
-                    }}
-                    title={`${shade}: ${color}`}
-                  >
-                    {shade}
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-5 gap-1">
+              {Object.entries(primaryShades).map(([shade, color]) => (
+                <div
+                  key={shade}
+                  className="flex h-8 items-center justify-center rounded text-xs font-medium"
+                  style={{
+                    backgroundColor: color,
+                    color: primaryColor.contrast,
+                  }}
+                  title={`${shade}: ${color}`}
+                >
+                  {shade}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Accent */}
@@ -87,23 +85,21 @@ const ThemePreview = (props: ThemPreviewProps) => {
                 Accent
               </Button>
             </div>
-            {accentShades && (
-              <div className="grid grid-cols-5 gap-1">
-                {Object.entries(previewThemeMode === "dark" ? accentShades.dark : accentShades.light).map(([shade, color]) => (
-                  <div
-                    key={shade}
-                    className="flex h-8 items-center justify-center rounded text-xs font-medium"
-                    style={{
-                      backgroundColor: color,
-                      color: previewThemeMode === "dark" ? accentColor.dark.contrast : accentColor.light.contrast,
-                    }}
-                    title={`${shade}: ${color}`}
-                  >
-                    {shade}
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-5 gap-1">
+              {Object.entries(accentShades).map(([shade, color]) => (
+                <div
+                  key={shade}
+                  className="flex h-8 items-center justify-center rounded text-xs font-medium"
+                  style={{
+                    backgroundColor: color,
+                    color: accentColor.contrast,
+                  }}
+                  title={`${shade}: ${color}`}
+                >
+                  {shade}
+                </div>
+              ))}
+            </div>
             <div>
               <TogglePreview
                 label="Toggles"
