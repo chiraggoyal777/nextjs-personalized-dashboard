@@ -3,7 +3,8 @@ import { useClient } from "@/components/contexts/ClientProvider";
 import { useTheme } from "@/components/contexts/ThemeProvider";
 import { Button } from "@/components/ui/Button";
 import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
-import { Theme } from "@/types/theme";
+import { isWithinNDays } from "@/lib/helpers";
+import { ThemeStore } from "@/types/theme";
 import { CircleUser, Edit3, Loader, LogOut, PaintbrushVertical, Palette, WandSparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { CSSProperties, useRef, useState } from "react";
@@ -14,10 +15,47 @@ interface AuthNavbarProps {
   isShowMoreFeaturesVisible: boolean;
 }
 
+interface ThemeItemContentProps {
+  item: ThemeStore;
+  isDark: boolean;
+  showUserIcon?: boolean;
+  showNewBadge?: boolean;
+  applying: boolean;
+}
+
+const ThemeItemContent = ({ item, isDark, showUserIcon = false, showNewBadge = false, applying }: ThemeItemContentProps) => {
+  const primary = isDark ? item.primaryColor.dark : item.primaryColor.light;
+  const accent = isDark ? item.accentColor.dark : item.accentColor.light;
+
+  const style: CSSProperties = {
+    "--color-stop-1": primary.DEFAULT,
+    "--color-stop-2": accent.DEFAULT,
+    "--contrast": primary.contrast,
+  } as CSSProperties;
+
+  return (
+    <div
+      className="flex min-w-0 items-center gap-3"
+      style={style}
+    >
+      <div className="relative size-4 shrink-0 rounded-full bg-[linear-gradient(to_bottom_right,var(--color-stop-1)_0%,var(--color-stop-1)_50%,var(--color-stop-2)_50%,var(--color-stop-2)_100%)]">
+        {showUserIcon && (
+          <div className="absolute -right-[1px] -bottom-[1px]">
+            <CircleUser className="h-2 w-2 rounded-full bg-gray-50" />
+          </div>
+        )}
+      </div>
+      <span className="grow truncate">{item.label}</span>
+      {showNewBadge && <small className="inline-block shrink-0 rounded-full bg-gradient-to-r from-[var(--color-stop-1)] to-[var(--color-stop-2)] px-2 align-middle text-[var(--contrast)]">{isWithinNDays(item.createdAt, 5) ? "new" : ""}</small>}
+      {applying && <Loader className="h-4 w-4 shrink-0 animate-spin" />}
+    </div>
+  );
+};
+
 const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: AuthNavbarProps) => {
   const router = useRouter();
   const { client } = useClient();
-  const { theme: activeTheme } = useTheme();
+  const { theme: activeTheme, isDark } = useTheme();
 
   const { theme, allThemes, setTheme } = useTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -33,15 +71,16 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
   };
 
   const { systemThemes, customThemes } = {
-    systemThemes: allThemes.filter((theme) => !theme.isUserCreated),
-    customThemes: allThemes.filter((theme) => theme.isUserCreated),
+    systemThemes: allThemes.filter((theme) => !theme.isUserCreated).sort((a, b) => b.createdAt.localeCompare(a.createdAt)), // or new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+
+    customThemes: allThemes.filter((theme) => theme.isUserCreated).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
   };
 
   const [applyingThemeId, setApplyingThemeId] = useState("");
 
   const requestTokenRef = useRef(0);
 
-  async function handleApplyTheme(theme: Theme) {
+  async function handleApplyTheme(theme: ThemeStore) {
     if (activeTheme && activeTheme.id === theme.id) return;
 
     // Cancel previous requests using a request token
@@ -97,49 +136,34 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                 <DropdownItem
                   key={item.id}
                   onClick={() => handleApplyTheme(item)}
-                  isSelected={theme !== null && theme.cssClassName === item.cssClassName}
+                  isSelected={theme?.cssClassName === item.cssClassName}
                 >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div
-                      className="relative size-4 shrink-0 rounded-full bg-gradient-to-br from-[var(--color-stop-1)] to-[var(--color-stop-2)]"
-                      style={
-                        {
-                          "--color-stop-1": item.colors[0],
-                          "--color-stop-2": item.colors[1],
-                        } as CSSProperties
-                      }
-                    >
-                      <div className="absolute -right-[1px] -bottom-[1px]">
-                        <CircleUser className="h-2 w-2 rounded-full bg-gray-50" />
-                      </div>
-                    </div>
-                    <span className="grow truncate">{item.label}</span>
-                    {applyingThemeId === item.id && <Loader className="h-4 w-4 shrink-0 animate-spin" />}
-                  </div>
+                  <ThemeItemContent
+                    item={item}
+                    isDark={isDark}
+                    showUserIcon
+                    applying={applyingThemeId === item.id}
+                  />
                 </DropdownItem>
               ))}
+
               <hr />
+
               {systemThemes.map((item) => (
                 <DropdownItem
                   key={item.id}
                   onClick={() => handleApplyTheme(item)}
-                  isSelected={theme !== null && theme.cssClassName === item.cssClassName}
+                  isSelected={theme?.cssClassName === item.cssClassName}
                 >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div
-                      className="size-4 shrink-0 rounded-full bg-gradient-to-br from-[var(--color-stop-1)] to-[var(--color-stop-2)]"
-                      style={
-                        {
-                          "--color-stop-1": item.colors[0],
-                          "--color-stop-2": item.colors[1],
-                        } as CSSProperties
-                      }
-                    ></div>
-                    <span className="grow truncate">{item.label}</span>
-                    {applyingThemeId === item.id && <Loader className="h-4 w-4 shrink-0 animate-spin" />}
-                  </div>
+                  <ThemeItemContent
+                    item={item}
+                    isDark={isDark}
+                    showNewBadge
+                    applying={applyingThemeId === item.id}
+                  />
                 </DropdownItem>
               ))}
+
               <>
                 <hr />
                 <DropdownItem
@@ -173,9 +197,9 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                   isSelected={false}
                 >
                   <div className="flex items-center gap-3">
-                    <PaintbrushVertical className="shrink-0 text-theme-primary size-4" />
-                    <span className="min-w-0 flex items-center from-theme-primary to-theme-accent bg-gradient-to-r bg-clip-text text-transparent">
-                      <span className="min-w-0 truncate mr-1">Customise theme</span> <small className="shrink-0 from-theme-primary to-theme-accent text-theme-primary-contrast inline-block rounded-full bg-gradient-to-r px-2 align-middle">new</small>
+                    <PaintbrushVertical className="text-theme-primary size-4 shrink-0" />
+                    <span className="from-theme-primary to-theme-accent flex min-w-0 items-center bg-gradient-to-r bg-clip-text text-transparent">
+                      <span className="mr-1 min-w-0 truncate">Customise theme</span> <small className="from-theme-primary to-theme-accent text-theme-primary-contrast inline-block shrink-0 rounded-full bg-gradient-to-r px-2 align-middle">new</small>
                     </span>
                   </div>
                 </DropdownItem>
@@ -185,8 +209,8 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                     isSelected={false}
                   >
                     <div className="flex items-center gap-3">
-                      <Edit3 className="shrink-0 text-theme-primary size-4" />
-                      <span className="min-w-0 flex items-center from-theme-primary to-theme-accent bg-gradient-to-r bg-clip-text text-transparent">
+                      <Edit3 className="text-theme-primary size-4 shrink-0" />
+                      <span className="from-theme-primary to-theme-accent flex min-w-0 items-center bg-gradient-to-r bg-clip-text text-transparent">
                         <span className="min-w-0 truncate">Modify {activeTheme.label}</span>
                       </span>
                     </div>

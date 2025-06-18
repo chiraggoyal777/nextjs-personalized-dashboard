@@ -5,17 +5,17 @@ import { SYSTEM_THEMES, applyTheme, loadThemePreferences, saveThemePreferences }
 import { Button } from "@/components/ui/Button";
 import { Monitor, Moon, Sun } from "lucide-react";
 import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
-import { Theme, GeneratedTheme, ThemeMode, ThemeStore } from "@/types/theme";
+import { ThemeStore, ThemeMode, ThemeStoreOrNull } from "@/types/theme";
 import toast from "react-hot-toast";
 
 interface ThemeContextType {
-  allThemes: Theme[];
-  savedThemes: GeneratedTheme[];
-  setSavedThemes: React.Dispatch<React.SetStateAction<GeneratedTheme[]>>;
-  theme: ThemeStore;
+  allThemes: ThemeStore[];
+  savedThemes: ThemeStore[];
+  setSavedThemes: React.Dispatch<React.SetStateAction<ThemeStore[]>>;
+  theme: ThemeStoreOrNull;
   themeMode: ThemeMode;
   isDark: boolean;
-  setTheme: (theme: ThemeStore, showToast?: boolean, delay?: number) => void;
+  setTheme: (theme: ThemeStoreOrNull, showToast?: boolean, delay?: number) => void;
   setThemeMode: (mode: ThemeMode) => void;
   isLoaded: boolean;
 }
@@ -23,22 +23,14 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [savedThemes, setSavedThemes] = useState<GeneratedTheme[]>([]);
-  const [theme, setThemeState] = useState<ThemeStore>(null);
+  const [savedThemes, setSavedThemes] = useState<ThemeStore[]>([]);
+  const [theme, setThemeState] = useState<ThemeStoreOrNull>(null);
   const [themeMode, setThemeModeState] = useState<ThemeMode>("system");
   const [isDark, setIsDark] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const customThemes: Theme[] = savedThemes.map(({ id, label, colors, description, cssClassName, isUserCreated }) => ({
-    id,
-    label,
-    colors,
-    description,
-    cssClassName,
-    isUserCreated,
-  }));
-  const allThemes = [...SYSTEM_THEMES, ...customThemes];
+  const allThemes: ThemeStore[] = [...SYSTEM_THEMES, ...savedThemes];
   useEffect(() => {
     reloadThemes();
 
@@ -113,7 +105,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const setTheme = async (newTheme: ThemeStore, showToast = true, delay = 0) => {
+  const setTheme = async (newTheme: ThemeStoreOrNull, showToast = true, delay = 0) => {
     setThemeState(newTheme);
     applyTheme(newTheme, isDark);
     saveThemePreferences(newTheme, themeMode);

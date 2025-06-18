@@ -52,7 +52,7 @@ const RadioGroup = ({
     return (
       <label 
         key={option.value}
-        className={`inline-flex items-center gap-2 ${
+        className={`flex items-center gap-2 ${
           isDisabled ? 'cursor-not-allowed' : isReadOnly ? 'cursor-default' : 'cursor-pointer'
         }`}
       >
@@ -91,7 +91,7 @@ const RadioGroup = ({
   };
 
   const content = (
-    <div className="flex flex-col gap-3">
+    <div className="space-y-2">
       {options.map(renderRadio)}
     </div>
   );
@@ -100,7 +100,7 @@ const RadioGroup = ({
   if (title) {
     return (
       <fieldset className="space-y-3">
-        <legend className="text-base font-semibold text-gray-900">
+        <legend className="block text-sm font-medium text-gray-600">
           {title}
         </legend>
         {content}

@@ -1,31 +1,34 @@
+import { Button } from "@/components/ui/Button";
 import { ButtonTabsPreview } from "@/components/ui/ButtonTabs";
 import { CheckboxPreview } from "@/components/ui/Checkbox";
-import RadioGroup from "@/components/ui/RadioGroup";
+import { InputPreview } from "@/components/ui/Input";
+import { RadioGroupPreview } from "@/components/ui/RadioGroup";
 import { TogglePreview } from "@/components/ui/Toggle";
-import { generatePalette } from "@/lib/helpers";
-import { ThemePalette } from "@/types/theme";
+import { ShadesPaletteGroup, ThemePalette } from "@/types/theme";
 import { DollarSign, TrendingUp, Users } from "lucide-react";
 import React, { CSSProperties } from "react";
 
 interface ThemPreviewProps {
   primaryColor: ThemePalette;
-  primaryContrast: ThemePalette;
+  primaryShades: ShadesPaletteGroup;
   accentColor: ThemePalette;
-  accentContrast: ThemePalette;
+  accentShades: ShadesPaletteGroup;
   previewThemeMode: keyof ThemePalette;
 }
 const ThemePreview = (props: ThemPreviewProps) => {
-  const { primaryColor, primaryContrast, accentColor, accentContrast, previewThemeMode } = props;
+  const { primaryColor, accentColor, previewThemeMode, primaryShades, accentShades } = props;
 
   return (
     <div
       className={`tp ${previewThemeMode === "dark" ? "tp-dark" : ""}`}
       style={
         {
-          "--color-theme-primary": primaryColor[previewThemeMode],
-          "--color-theme-primary-contrast": primaryContrast[previewThemeMode],
-          "--color-theme-accent": accentColor[previewThemeMode],
-          "--color-theme-accent-contrast": accentContrast[previewThemeMode],
+          "--color-theme-primary": primaryColor[previewThemeMode].DEFAULT,
+          "--color-theme-primary-interaction": primaryColor[previewThemeMode].interaction,
+          "--color-theme-primary-contrast": primaryColor[previewThemeMode].contrast,
+          "--color-theme-accent": accentColor[previewThemeMode].DEFAULT,
+          "--color-theme-accent-interaction": accentColor[previewThemeMode].interaction,
+          "--color-theme-accent-contrast": accentColor[previewThemeMode].contrast,
         } as CSSProperties
       }
     >
@@ -33,69 +36,85 @@ const ThemePreview = (props: ThemPreviewProps) => {
         <div className="space-y-4">
           {/* Primary */}
           <div className="space-y-3">
-            <div
-              className="rounded px-4 py-2 text-center font-medium"
-              style={{
-                backgroundColor: previewThemeMode === "dark" ? primaryColor.dark : primaryColor.light,
-                color: previewThemeMode === "dark" ? primaryContrast.dark : primaryContrast.light,
-              }}
-            >
-              Primary
+            <div className="space-y-2">
+              <InputPreview
+                type="email"
+                label="Email"
+                placeholder="Email"
+              />
+              <InputPreview
+                type="password"
+                label="Password"
+                placeholder="Password"
+              />
             </div>
-            <div className="grid grid-cols-5 gap-1">
-              {Object.entries(generatePalette(previewThemeMode === "dark" ? primaryColor.dark : primaryColor.light)).map(([shade, color]) => (
-                <div
-                  key={shade}
-                  className="flex h-8 items-center justify-center rounded text-xs font-medium"
-                  style={{
-                    backgroundColor: color,
-                    color: previewThemeMode === "dark" ? primaryContrast.dark : primaryContrast.light,
-                  }}
-                  title={`${shade}: ${color}`}
-                >
-                  {shade}
-                </div>
-              ))}
+            <div>
+              <Button
+                className="block w-full"
+                variant="primary"
+                type="button"
+              >
+                Primary
+              </Button>
             </div>
+            {primaryShades && (
+              <div className="grid grid-cols-5 gap-1">
+                {Object.entries(previewThemeMode === "dark" ? primaryShades.dark : primaryShades.light).map(([shade, color]) => (
+                  <div
+                    key={shade}
+                    className="flex h-8 items-center justify-center rounded text-xs font-medium"
+                    style={{
+                      backgroundColor: color,
+                      color: previewThemeMode === "dark" ? primaryColor.dark.contrast : primaryColor.light.contrast,
+                    }}
+                    title={`${shade}: ${color}`}
+                  >
+                    {shade}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Accent */}
           <div className="space-y-3">
-            <div
-              className="rounded px-4 py-2 text-center font-medium"
-              style={{
-                backgroundColor: previewThemeMode === "dark" ? accentColor.dark : accentColor.light,
-                color: previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light,
-              }}
-            >
-              Accent
-            </div>
-            <div className="grid grid-cols-5 gap-1">
-              {Object.entries(generatePalette(previewThemeMode === "dark" ? accentColor.dark : accentColor.light)).map(([shade, color]) => (
-                <div
-                  key={shade}
-                  className="flex h-8 items-center justify-center rounded text-xs font-medium"
-                  style={{
-                    backgroundColor: color,
-                    color: previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light,
-                  }}
-                  title={`${shade}: ${color}`}
-                >
-                  {shade}
-                </div>
-              ))}
-            </div>
-            <TogglePreview
-              label="Toggles"
-              name="themeToggle"
-              defaultChecked
-            />
-            <br />
             <div>
-              <RadioGroup
+              <Button
+                className="block w-full"
+                variant="accent"
+                type="button"
+              >
+                Accent
+              </Button>
+            </div>
+            {accentShades && (
+              <div className="grid grid-cols-5 gap-1">
+                {Object.entries(previewThemeMode === "dark" ? accentShades.dark : accentShades.light).map(([shade, color]) => (
+                  <div
+                    key={shade}
+                    className="flex h-8 items-center justify-center rounded text-xs font-medium"
+                    style={{
+                      backgroundColor: color,
+                      color: previewThemeMode === "dark" ? accentColor.dark.contrast : accentColor.light.contrast,
+                    }}
+                    title={`${shade}: ${color}`}
+                  >
+                    {shade}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div>
+              <TogglePreview
+                label="Toggles"
+                name="themeToggle"
+                defaultChecked
+              />
+            </div>
+            <div>
+              <RadioGroupPreview
                 name="uncontrolled-example"
                 defaultValue="option2"
-                onChange={(value) => console.log("Selected:", value)}
                 options={[
                   { value: "option1", label: "First Choice" },
                   { value: "option2", label: "Second Choice" },
@@ -103,12 +122,11 @@ const ThemePreview = (props: ThemPreviewProps) => {
                 ]}
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <CheckboxPreview
                 label="Checkbox 1"
                 name="checkbox1"
               />
-              <br />
               <CheckboxPreview
                 label="Checkbox 2"
                 name="checkbox2"
@@ -128,7 +146,7 @@ const ThemePreview = (props: ThemPreviewProps) => {
               {[TrendingUp, DollarSign, Users].map((Icon, index) => (
                 <div
                   key={index}
-                  className="w-max shrink-0 rounded-full bg-theme-accent/10 p-3 text-theme-accent"
+                  className="bg-theme-accent/10 text-theme-accent w-max shrink-0 rounded-full p-3"
                 >
                   <Icon className="h-6 w-6" />
                 </div>

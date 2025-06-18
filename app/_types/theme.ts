@@ -3,25 +3,32 @@ export interface Theme {
   id: string;
   cssClassName: string;
   label: string;
-  colors: [string, string]; // Tuple of exactly 2 color strings primary and accent
   description: string;
   isUserCreated: boolean;
 }
 
-export type ThemeStore = Theme | null;
+export type ThemeStoreOrNull = ThemeStore | null;
 
-export type GeneratedTheme = Theme & {
-  primaryColor: { light: string; dark: string };
-  primaryContrast: { light: string; dark: string };
+export type ThemeStore = Theme & {
+  primaryColor: ThemePalette;
+  accentColor: ThemePalette;
   useSeparateAccent: boolean;
-  accentColor: { light: string; dark: string };
-  accentContrast: { light: string; dark: string };
   useSeparateDarkMode: boolean;
   css: string;
   createdAt: string; // ISO timestamp
 };
 
+type PaletteState = {
+  DEFAULT: string;
+  interaction: string;
+  contrast: string;
+}
+
 export type ThemePalette = {
-  light: string;
-  dark: string;
+  light: PaletteState;
+  dark: PaletteState;
 };
+
+export type ShadesPalette = { [shade: string]: string };
+
+export type ShadesPaletteGroup = Record<keyof ThemePalette, ShadesPalette> | null;

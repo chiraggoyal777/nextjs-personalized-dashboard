@@ -36,7 +36,7 @@ const Toggle = ({ label, name, checked, defaultChecked = false, onChange, readon
   return (
     <label
       htmlFor={name}
-      className="inline-flex cursor-pointer items-center gap-2"
+      className="flex cursor-pointer items-center gap-2"
     >
       <span className="text-sm font-medium text-gray-600">{label}</span>
       <input

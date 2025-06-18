@@ -1,7 +1,34 @@
-import { ThemePalette } from "@/types/theme";
+import { ShadesPalette, ThemePalette } from "@/types/theme";
 
 type RGB = { r: number; g: number; b: number };
-type Palette = { [shade: string]: string };
+
+export function rgbToHex(rgb: string): string {
+  const result = rgb.match(/\d+/g);
+  if (!result) return rgb;
+  return (
+    "#" +
+    result
+      .slice(0, 3)
+      .map((num) => {
+        const hex = parseInt(num).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+      })
+      .join("")
+  ).toLowerCase();
+}
+
+export function normalizeHex(hex: string): string {
+  // Handle shorthand like #fff
+  if (hex.startsWith("#") && hex.length === 4) {
+    return (
+      "#" +
+      hex[1] + hex[1] +
+      hex[2] + hex[2] +
+      hex[3] + hex[3]
+    ).toLowerCase();
+  }
+  return hex.toLowerCase();
+}
 
 // Color utility functions
 export const hexToRgb = (hex: string): { r: number; g: number; b: number } | null => {
@@ -73,7 +100,7 @@ export const hslToRgb = (h: number, s: number, l: number): [r: number, g: number
   }
 };
 
-export const generatePalette = (baseColor: string): Palette => {
+export const generatePalette = (baseColor: string): ShadesPalette => {
   const rgb: RGB | null = hexToRgb(baseColor);
   if (!rgb) return {};
 
@@ -93,7 +120,7 @@ export const generatePalette = (baseColor: string): Palette => {
     950: [h, Math.min(s + 25, 100), Math.max(l - 50, 4)],
   };
 
-  const palette: Palette = {};
+  const palette: ShadesPalette = {};
 
   Object.entries(shades).forEach(([shade, [hue, sat, light]]) => {
     const [r, g, b] = hslToRgb(hue, sat, light);
@@ -123,9 +150,9 @@ export const getContrastRatio = (color1: string, color2: "#ffffff" | "#000000"):
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 };
 
-export const generateThemeCSS = ({ cssClassName, primaryColor, primaryContrast, accentColor, accentContrast, useSeparateDarkMode, useSeparateAccent }: { cssClassName: string; primaryColor: ThemePalette; primaryContrast: ThemePalette; accentColor: ThemePalette; accentContrast: ThemePalette; useSeparateDarkMode: boolean; useSeparateAccent: boolean }) => {
-  const primaryPalette = generatePalette(primaryColor.light);
-  const accentPalette = useSeparateAccent ? generatePalette(accentColor.light) : generatePalette(primaryColor.light);
+export const generateThemeCSS = ({ cssClassName, primaryColor, accentColor, useSeparateDarkMode, useSeparateAccent }: { cssClassName: string; primaryColor: ThemePalette;  accentColor: ThemePalette; useSeparateDarkMode: boolean; useSeparateAccent: boolean }) => {
+  const primaryPalette = generatePalette(primaryColor.light.DEFAULT);
+  const accentPalette = useSeparateAccent ? generatePalette(accentColor.light.DEFAULT) : generatePalette(primaryColor.light.DEFAULT);
 
   let css = `/* ${cssClassName} theme */\n.${cssClassName} {\n`;
 
@@ -137,7 +164,7 @@ export const generateThemeCSS = ({ cssClassName, primaryColor, primaryContrast, 
   css += `  /* default primary, interaction, contrast */\n`;
   css += `  --color-theme-primary: var(--color-theme-primary-500);\n`;
   css += `  --color-theme-primary-interaction: var(--color-theme-primary-600);\n`;
-  css += `  --color-theme-primary-contrast: var(--color-gray-${primaryContrast.light === "white" ? "0" : "1000"});\n\n`;
+  css += `  --color-theme-primary-contrast: var(--color-gray-${primaryColor.light.contrast === "white" ? "0" : "1000"});\n\n`;
 
   // Accent colors
   Object.entries(accentPalette).forEach(([shade, color]) => {
@@ -147,12 +174,12 @@ export const generateThemeCSS = ({ cssClassName, primaryColor, primaryContrast, 
   css += `  /* default accent, interaction, contrast */\n`;
   css += `  --color-theme-accent: var(--color-theme-accent-500);\n`;
   css += `  --color-theme-accent-interaction: var(--color-theme-accent-600);\n`;
-  css += `  --color-theme-accent-contrast: var(--color-gray-${accentContrast.light === "white" ? "0" : "1000"});\n`;
+  css += `  --color-theme-accent-contrast: var(--color-gray-${accentColor.light.contrast === "white" ? "0" : "1000"});\n`;
   css += `}\n`;
 
   // Dark mode
-  const darkPrimaryPalette = useSeparateDarkMode ? generatePalette(primaryColor.dark) : generatePalette(primaryColor.light);
-  const darkAccentPalette = useSeparateDarkMode ? generatePalette(accentColor.dark) : generatePalette(accentColor.light);
+  const darkPrimaryPalette = useSeparateDarkMode ? generatePalette(primaryColor.dark.DEFAULT) : generatePalette(primaryColor.light.DEFAULT);
+  const darkAccentPalette = useSeparateDarkMode ? generatePalette(accentColor.dark.DEFAULT) : generatePalette(accentColor.light.DEFAULT);
 
   // Reverse the palette for dark mode
   const reversedPrimary: Record<number, string> = {};
@@ -177,7 +204,7 @@ export const generateThemeCSS = ({ cssClassName, primaryColor, primaryContrast, 
   css += `  /* override light mode primary, interaction, contrast */\n`;
   css += `  --color-theme-primary: var(--color-theme-primary-500);\n`;
   css += `  --color-theme-primary-interaction: var(--color-theme-primary-600);\n`;
-  css += `  --color-theme-primary-contrast: var(--color-gray-${primaryContrast.dark === "white" ? "1000" : "0"});\n\n`;
+  css += `  --color-theme-primary-contrast: var(--color-gray-${primaryColor.dark.contrast === "white" ? "1000" : "0"});\n\n`;
 
   Object.entries(reversedAccent).forEach(([shade, color]) => {
     css += `  --color-theme-accent-${shade}: ${color};\n`;
@@ -186,7 +213,7 @@ export const generateThemeCSS = ({ cssClassName, primaryColor, primaryContrast, 
   css += `  /* override light mode accent, interaction, contrast */\n`;
   css += `  --color-theme-accent: var(--color-theme-accent-500);\n`;
   css += `  --color-theme-accent-interaction: var(--color-theme-accent-600);\n`;
-  css += `  --color-theme-accent-contrast: var(--color-gray-${accentContrast.dark === "white" ? "1000" : "0"});\n`;
+  css += `  --color-theme-accent-contrast: var(--color-gray-${accentColor.dark.contrast === "white" ? "1000" : "0"});\n`;
   css += `}\n`;
 
   return css;
@@ -202,3 +229,11 @@ export const debounce = <T extends (...args: unknown[]) => void>(
     timeoutId = setTimeout(() => func(...args), delay);
   };
 };
+
+export function isWithinNDays(createdAt: string, days: number): boolean {
+  const now = new Date();
+  const createdDate = new Date(createdAt);
+  const diffInMs = now.getTime() - createdDate.getTime();
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  return diffInDays <= days;
+}

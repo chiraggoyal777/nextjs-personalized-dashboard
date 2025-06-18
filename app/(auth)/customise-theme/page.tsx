@@ -1,66 +1,164 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
-import { Palette, Save, Eye, Trash2, Download, Code, Edit, Loader as LoaderIcon } from "lucide-react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { Palette, Save, Eye, Trash2, Download, Code, Loader as LoaderIcon, Copy } from "lucide-react";
 import Toggle from "@/components/ui/Toggle";
 import Checkbox from "@/components/ui/Checkbox";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GeneratedTheme, ThemePalette } from "@/types/theme";
+import { ThemeStore, ThemePalette, ShadesPalette } from "@/types/theme";
 import { useTheme } from "@/components/contexts/ThemeProvider";
 import { useClient } from "@/components/contexts/ClientProvider";
 import toast from "react-hot-toast";
-import { generateThemeCSS, getContrastRatio } from "@/lib/helpers";
+import { generatePalette, generateThemeCSS, getContrastRatio, normalizeHex, rgbToHex } from "@/lib/helpers";
 import Loader from "@/components/ui/Loader";
 import ButtonTabs from "@/components/ui/ButtonTabs";
 import ThemePreview from "@/components/ui/ThemePreview";
 import CSSPreview from "@/components/ui/CSSPreview";
 import RadioGroup from "@/components/ui/RadioGroup";
+import Input from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 const INITIAL_PRIMARY_COLOR = "#d946ef";
+const INITIAL_PRIMARY_INTERACTION_COLOR = "#d946ef";
 const INITIAL_PRIMARY_CONTRAST_COLOR = "white";
 const INITIAL_ACCENT_COLOR = "#06b6d4";
+const INITIAL_ACCENT_INTERACTION_COLOR = "#06b6d4";
 const INITIAL_ACCENT_CONTRAST_COLOR = "white";
+
+// Debounce hook for performance optimization
+const useDebounce = <T,>(value: T, delay: number): T => {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
 
 const CustomiseThemePage = () => {
   const router = useRouter();
   const { client } = useClient();
   const [primaryColor, setPrimaryColor] = useState<ThemePalette>({
-    light: INITIAL_PRIMARY_COLOR,
-    dark: INITIAL_PRIMARY_COLOR,
+    light: {
+      DEFAULT: INITIAL_PRIMARY_COLOR,
+      interaction: INITIAL_PRIMARY_INTERACTION_COLOR,
+      contrast: INITIAL_PRIMARY_CONTRAST_COLOR,
+    },
+    dark: {
+      DEFAULT: INITIAL_PRIMARY_COLOR,
+      interaction: INITIAL_PRIMARY_INTERACTION_COLOR,
+      contrast: INITIAL_PRIMARY_CONTRAST_COLOR,
+    },
   });
-  const [primaryContrast, setPrimaryContrast] = useState<ThemePalette>({
-    light: INITIAL_PRIMARY_CONTRAST_COLOR,
-    dark: INITIAL_PRIMARY_CONTRAST_COLOR,
-  });
-  const [useSeparateAccent, setUseSeparateAccent] = useState(false);
-
   const [useSeparateDarkMode, setUseSeparateDarkMode] = useState(false);
-
+  const [useSeparateAccent, setUseSeparateAccent] = useState(false);
   const [accentColor, setAccentColor] = useState<ThemePalette>({
-    light: INITIAL_PRIMARY_COLOR,
-    dark: INITIAL_PRIMARY_COLOR,
-  });
-  const [accentContrast, setAccentContrast] = useState<ThemePalette>({
-    light: INITIAL_PRIMARY_CONTRAST_COLOR,
-    dark: INITIAL_PRIMARY_CONTRAST_COLOR,
+    light: {
+      DEFAULT: INITIAL_PRIMARY_COLOR,
+      interaction: INITIAL_PRIMARY_INTERACTION_COLOR,
+      contrast: INITIAL_PRIMARY_CONTRAST_COLOR,
+    },
+    dark: {
+      DEFAULT: INITIAL_PRIMARY_COLOR,
+      interaction: INITIAL_PRIMARY_INTERACTION_COLOR,
+      contrast: INITIAL_PRIMARY_CONTRAST_COLOR,
+    },
   });
 
-  const { savedThemes, setSavedThemes, theme, setTheme } = useTheme();
+  // Debounce color values for expensive operations
+  const debouncedPrimaryColor = useDebounce(primaryColor, 500);
+  const debouncedAccentColor = useDebounce(accentColor, 500);
 
+  // Memoized palette cache with improved caching strategy
+  const getShades = useMemo(() => {
+    const cache = new Map<string, ShadesPalette>();
+    return (color: string): ShadesPalette => {
+      const normalizedColor = normalizeHex(color);
+      if (cache.has(normalizedColor)) return cache.get(normalizedColor)!;
+
+      const entries = Object.entries(generatePalette(normalizedColor));
+      const palette: ShadesPalette = entries.reduce((acc, [shade, value]) => {
+        acc[shade] = value;
+        return acc;
+      }, {} as ShadesPalette);
+
+      cache.set(normalizedColor, palette);
+      return palette;
+    };
+  }, []);
+
+  // Memoized interaction color calculation
+  const getInteractionColor = useCallback(
+    (defaultColor: string): string => {
+      try {
+        const shades = getShades(defaultColor);
+        const normalizedDefault = normalizeHex(defaultColor);
+        const shadeEntries = Object.entries(shades).map(([shade, value]) => [shade, rgbToHex(value.toLowerCase())]);
+        const defaultIndex = shadeEntries.findIndex(([, value]) => value === normalizedDefault);
+        return defaultIndex !== -1 && defaultIndex < shadeEntries.length - 1 ? shadeEntries[defaultIndex + 1][1] : defaultColor;
+      } catch (error) {
+        console.warn("Error calculating interaction color:", error);
+        return defaultColor;
+      }
+    },
+    [getShades]
+  );
+
+  // Update interaction colors only when debounced colors change
+  useEffect(() => {
+    const updateInteractionColors = () => {
+      const primaryLightInteraction = getInteractionColor(debouncedPrimaryColor.light.DEFAULT);
+      const primaryDarkInteraction = getInteractionColor(debouncedPrimaryColor.dark.DEFAULT);
+      const accentLightInteraction = getInteractionColor(debouncedAccentColor.light.DEFAULT);
+      const accentDarkInteraction = getInteractionColor(debouncedAccentColor.dark.DEFAULT);
+
+      setPrimaryColor((prev) => {
+        if (prev.light.interaction === primaryLightInteraction && prev.dark.interaction === primaryDarkInteraction) {
+          return prev;
+        }
+        return {
+          light: { ...prev.light, interaction: primaryLightInteraction },
+          dark: { ...prev.dark, interaction: primaryDarkInteraction },
+        };
+      });
+
+      setAccentColor((prev) => {
+        if (prev.light.interaction === accentLightInteraction && prev.dark.interaction === accentDarkInteraction) {
+          return prev;
+        }
+        return {
+          light: { ...prev.light, interaction: accentLightInteraction },
+          dark: { ...prev.dark, interaction: accentDarkInteraction },
+        };
+      });
+    };
+
+    updateInteractionColors();
+  }, [debouncedPrimaryColor.light.DEFAULT, debouncedPrimaryColor.dark.DEFAULT, debouncedAccentColor.light.DEFAULT, debouncedAccentColor.dark.DEFAULT, getInteractionColor]);
+
+  const { savedThemes, setSavedThemes, theme: activeTheme, setTheme } = useTheme();
   const [previewThemeMode, setPreviewThemeMode] = useState<keyof ThemePalette>("light");
-
   const searchParams = useSearchParams();
-
+  const isSilentUpdate = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  useEffect(() => {
+
+  async function fetchCurrentThemeToEdit() {
     setIsLoading(true);
     const id = searchParams.get("id");
     if (id) {
       const foundTheme = savedThemes.find((theme) => theme.id === id);
       if (foundTheme) {
-        loadTheme(foundTheme);
+        await loadTheme(foundTheme);
         setEditingThemeId(id);
+        setIsLoading(false);
       } else {
         resetForm();
         setIsLoading(false);
@@ -71,22 +169,39 @@ const CustomiseThemePage = () => {
       resetForm();
       setIsLoading(false);
     }
+  }
+
+  useEffect(() => {
+    fetchCurrentThemeToEdit();
   }, [searchParams]);
 
-  const [editingThemeId, setEditingThemeId] = useState<GeneratedTheme["id"] | null>(null);
+  const [editingThemeId, setEditingThemeId] = useState<ThemeStore["id"] | null>(null);
+  const isEditingCurrentTheme = Boolean(activeTheme && activeTheme.id === editingThemeId);
 
-  const isEditingCurrentTheme = Boolean(theme && theme.id === editingThemeId);
   useEffect(() => {
     setWillApplySameTheme(isEditingCurrentTheme);
-  }, [editingThemeId, theme]);
-  const [themeName, setThemeName] = useState("");
+  }, [editingThemeId, activeTheme]);
 
+  const [themeName, setThemeName] = useState("");
   const createThemeId = () => `theme-${client.id}-${Date.now()}`;
+
+  // Memoize CSS class name
   const cssClassName = useMemo(() => (themeName.trim() === "" ? "[your-theme-name]" : "theme-" + themeName.toLowerCase().replace(/\s+/g, "-") + "_" + Date.now()), [themeName]);
 
   const currentThemeId = editingThemeId ?? createThemeId();
 
-  const generatedCSS = generateThemeCSS({ cssClassName, accentColor, accentContrast, primaryColor, primaryContrast, useSeparateAccent, useSeparateDarkMode });
+  // Memoize expensive CSS generation with debounced values
+  const generatedCSS = useMemo(
+    () =>
+      generateThemeCSS({
+        cssClassName,
+        accentColor: debouncedAccentColor,
+        primaryColor: debouncedPrimaryColor,
+        useSeparateAccent,
+        useSeparateDarkMode,
+      }),
+    [cssClassName, debouncedAccentColor, debouncedPrimaryColor, useSeparateAccent, useSeparateDarkMode]
+  );
 
   const saveTheme = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,30 +212,25 @@ const CustomiseThemePage = () => {
     }
     setIsSaving(true);
 
-    const themeData: GeneratedTheme = {
+    const themeData: ThemeStore = {
       id: currentThemeId,
       label: themeName,
-      colors: [primaryColor.light, accentColor.light],
       description: "",
-      primaryColor,
-      primaryContrast,
+      primaryColor: debouncedPrimaryColor,
+      accentColor: debouncedAccentColor,
       useSeparateAccent,
-      accentColor,
-      accentContrast,
       useSeparateDarkMode,
-      cssClassName: cssClassName,
+      cssClassName,
       css: generatedCSS,
       createdAt: new Date().toISOString(),
       isUserCreated: true,
     };
 
-    let updatedThemes: GeneratedTheme[];
+    let updatedThemes: ThemeStore[];
 
     if (editingThemeId) {
-      // Update existing theme
       updatedThemes = savedThemes.map((theme) => (theme.id === editingThemeId ? themeData : theme));
     } else {
-      // Create new theme
       updatedThemes = [...savedThemes, themeData];
     }
 
@@ -129,45 +239,50 @@ const CustomiseThemePage = () => {
     toast.success(themeData.label + (editingThemeId ? " theme updated!" : " theme saved!"));
 
     if (willApplySameTheme) {
-      const { id, label, colors, description, isUserCreated, cssClassName } = themeData;
-      setTheme({ id, label, colors, description, isUserCreated, cssClassName }, true, 1000);
+      setTheme(themeData, true, 1000);
     }
-    /* resetForm();
-    setEditingThemeId(null);
-    setIsSaving(false); */
     router.push("/dashboard");
   };
 
-  const deleteTheme = (themeId: GeneratedTheme["id"]) => {
+  const deleteTheme = (themeId: ThemeStore["id"]) => {
     const updatedThemes = savedThemes.filter((theme) => theme.id !== themeId);
     toast.success("Theme deleted!");
     setSavedThemes(updatedThemes);
-    if (theme && theme.id === themeId) {
+    if (activeTheme && activeTheme.id === themeId) {
       setTheme(null);
     }
   };
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setThemeName("");
     setPrimaryColor({
-      light: INITIAL_PRIMARY_COLOR,
-      dark: INITIAL_PRIMARY_COLOR,
+      light: {
+        DEFAULT: INITIAL_PRIMARY_COLOR,
+        interaction: INITIAL_PRIMARY_INTERACTION_COLOR,
+        contrast: INITIAL_PRIMARY_CONTRAST_COLOR,
+      },
+      dark: {
+        DEFAULT: INITIAL_PRIMARY_COLOR,
+        interaction: INITIAL_PRIMARY_INTERACTION_COLOR,
+        contrast: INITIAL_PRIMARY_CONTRAST_COLOR,
+      },
     });
-    setPrimaryContrast({
-      light: INITIAL_PRIMARY_CONTRAST_COLOR,
-      dark: INITIAL_PRIMARY_CONTRAST_COLOR,
-    });
-    setUseSeparateAccent(false);
+
     setAccentColor({
-      light: INITIAL_PRIMARY_COLOR,
-      dark: INITIAL_PRIMARY_COLOR,
-    });
-    setAccentContrast({
-      light: INITIAL_PRIMARY_CONTRAST_COLOR,
-      dark: INITIAL_PRIMARY_CONTRAST_COLOR,
+      light: {
+        DEFAULT: INITIAL_PRIMARY_COLOR,
+        interaction: INITIAL_PRIMARY_INTERACTION_COLOR,
+        contrast: INITIAL_PRIMARY_CONTRAST_COLOR,
+      },
+      dark: {
+        DEFAULT: INITIAL_PRIMARY_COLOR,
+        interaction: INITIAL_PRIMARY_INTERACTION_COLOR,
+        contrast: INITIAL_PRIMARY_CONTRAST_COLOR,
+      },
     });
     setUseSeparateDarkMode(false);
-  };
+    setUseSeparateAccent(false);
+  }, []);
 
   const exportThemes = () => {
     const dataStr = JSON.stringify(savedThemes, null, 2);
@@ -183,95 +298,188 @@ const CustomiseThemePage = () => {
     toast.success("Theme data exported!");
   };
 
-  const primaryWhiteContrast = {
-    light: getContrastRatio(primaryColor.light, "#ffffff"),
-    dark: getContrastRatio(primaryColor.dark, "#ffffff"),
-  };
-  const primaryBlackContrast = {
-    light: getContrastRatio(primaryColor.light, "#000000"),
-    dark: getContrastRatio(primaryColor.dark, "#000000"),
-  };
-  const accentWhiteContrast = {
-    light: getContrastRatio(accentColor.light, "#ffffff"),
-    dark: getContrastRatio(accentColor.dark, "#ffffff"),
-  };
-  const accentBlackContrast = {
-    light: getContrastRatio(accentColor.light, "#000000"),
-    dark: getContrastRatio(accentColor.dark, "#000000"),
-  };
+  // Memoize contrast calculations with debounced values
+  const contrastRatios = useMemo(
+    () => ({
+      primaryWhite: {
+        light: getContrastRatio(debouncedPrimaryColor.light.DEFAULT, "#ffffff"),
+        dark: getContrastRatio(debouncedPrimaryColor.dark.DEFAULT, "#ffffff"),
+      },
+      primaryBlack: {
+        light: getContrastRatio(debouncedPrimaryColor.light.DEFAULT, "#000000"),
+        dark: getContrastRatio(debouncedPrimaryColor.dark.DEFAULT, "#000000"),
+      },
+      accentWhite: {
+        light: getContrastRatio(debouncedAccentColor.light.DEFAULT, "#ffffff"),
+        dark: getContrastRatio(debouncedAccentColor.dark.DEFAULT, "#ffffff"),
+      },
+      accentBlack: {
+        light: getContrastRatio(debouncedAccentColor.light.DEFAULT, "#000000"),
+        dark: getContrastRatio(debouncedAccentColor.dark.DEFAULT, "#000000"),
+      },
+    }),
+    [debouncedPrimaryColor, debouncedAccentColor]
+  );
 
+  // Optimized accent color sync
   useEffect(() => {
-    if (!isLoading) {
-      if (!useSeparateAccent) {
-        setAccentColor({
-          light: primaryColor.light,
-          dark: primaryColor.dark,
-        });
-        setAccentContrast({
-          light: primaryContrast.light,
-          dark: primaryContrast.dark,
-        });
-      } else {
-        setAccentColor({
-          light: INITIAL_ACCENT_COLOR,
-          dark: INITIAL_ACCENT_COLOR,
-        });
-        setAccentContrast({
-          light: INITIAL_ACCENT_CONTRAST_COLOR,
-          dark: INITIAL_ACCENT_CONTRAST_COLOR,
-        });
-      }
+    if (isSilentUpdate.current || useSeparateAccent) return;
+
+    setAccentColor({
+      light: {
+        DEFAULT: primaryColor.light.DEFAULT,
+        interaction: primaryColor.light.interaction,
+        contrast: primaryColor.light.contrast,
+      },
+      dark: {
+        DEFAULT: primaryColor.dark.DEFAULT,
+        interaction: primaryColor.dark.interaction,
+        contrast: primaryColor.dark.contrast,
+      },
+    });
+  }, [primaryColor, useSeparateAccent]);
+
+  // Handle separate accent toggle
+  useEffect(() => {
+    if (isSilentUpdate.current) return;
+
+    if (!useSeparateAccent) {
+      setAccentColor({
+        light: {
+          DEFAULT: primaryColor.light.DEFAULT,
+          interaction: primaryColor.light.interaction,
+          contrast: primaryColor.light.contrast,
+        },
+        dark: {
+          DEFAULT: primaryColor.dark.DEFAULT,
+          interaction: primaryColor.dark.interaction,
+          contrast: primaryColor.dark.contrast,
+        },
+      });
+    } else {
+      setAccentColor({
+        light: {
+          DEFAULT: INITIAL_ACCENT_COLOR,
+          interaction: INITIAL_ACCENT_INTERACTION_COLOR,
+          contrast: INITIAL_ACCENT_CONTRAST_COLOR,
+        },
+        dark: {
+          DEFAULT: INITIAL_ACCENT_COLOR,
+          interaction: INITIAL_ACCENT_INTERACTION_COLOR,
+          contrast: INITIAL_ACCENT_CONTRAST_COLOR,
+        },
+      });
     }
   }, [useSeparateAccent]);
 
+  // Handle separate dark mode toggle
   useEffect(() => {
-    if (!isLoading) {
-      if (!useSeparateAccent) {
-        setAccentColor({
-          light: primaryColor.light,
-          dark: primaryColor.dark,
-        });
-        setAccentContrast({
-          light: primaryContrast.light,
-          dark: primaryContrast.dark,
-        });
-      }
-    }
-  }, [primaryColor, primaryContrast]);
+    if (isSilentUpdate.current) return;
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (!useSeparateDarkMode) {
-        setPreviewThemeMode("light");
-        setPrimaryColor((prev) => ({ ...prev, dark: primaryColor.light }));
-        setPrimaryContrast((prev) => ({
-          ...prev,
-          dark: primaryContrast.light,
-        }));
-        setAccentColor((prev) => ({ ...prev, dark: accentColor.light }));
-        setAccentContrast((prev) => ({
-          ...prev,
-          dark: accentContrast.light,
-        }));
-      }
+    if (!useSeparateDarkMode) {
+      setPreviewThemeMode("light");
+
+      setPrimaryColor((prev) => ({
+        ...prev,
+        dark: {
+          DEFAULT: prev.light.DEFAULT,
+          interaction: prev.light.interaction,
+          contrast: prev.light.contrast,
+        },
+      }));
+
+      setAccentColor((prev) => ({
+        ...prev,
+        dark: {
+          DEFAULT: prev.light.DEFAULT,
+          interaction: prev.light.interaction,
+          contrast: prev.light.contrast,
+        },
+      }));
     }
   }, [useSeparateDarkMode]);
 
   const [previewType, setPreviewType] = useState<"code" | "visual">("visual");
   const [willApplySameTheme, setWillApplySameTheme] = useState(false);
 
-  async function loadTheme(theme: GeneratedTheme) {
+  async function loadTheme(theme: ThemeStore, autoScroll: boolean = true, wait = 500) {
+    isSilentUpdate.current = true;
+
+    if (autoScroll) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
     setThemeName(theme.label);
     setUseSeparateDarkMode(theme.useSeparateDarkMode);
     setUseSeparateAccent(theme.useSeparateAccent);
     setPrimaryColor(theme.primaryColor);
-    setPrimaryContrast(theme.primaryContrast);
     setAccentColor(theme.accentColor);
-    setAccentContrast(theme.accentContrast);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // delibrate timeout to respect side effects
-    setIsLoading(false);
+
+    await new Promise((resolve) =>
+      setTimeout(() => {
+        isSilentUpdate.current = false;
+        resolve(true);
+      }, wait)
+    );
+
+    // Delay to let state updates settle before side-effects re-engage
+    /* requestAnimationFrame(() => {
+      isSilentUpdate.current = false;
+    }); */
   }
+
+  // Optimized color change handlers
+  const handlePrimaryColorChange = useCallback(
+    (value: string, mode?: keyof ThemePalette) => {
+      setPrimaryColor((prev) =>
+        useSeparateDarkMode && mode
+          ? {
+              ...prev,
+              [mode]: {
+                ...prev[mode],
+                DEFAULT: value,
+              },
+            }
+          : {
+              light: {
+                ...prev.light,
+                DEFAULT: value,
+              },
+              dark: {
+                ...prev.dark,
+                DEFAULT: value,
+              },
+            }
+      );
+    },
+    [useSeparateDarkMode]
+  );
+
+  const handleAccentColorChange = useCallback(
+    (value: string, mode?: keyof ThemePalette) => {
+      setAccentColor((prev) =>
+        useSeparateDarkMode && mode
+          ? {
+              ...prev,
+              [mode]: {
+                ...prev[mode],
+                DEFAULT: value,
+              },
+            }
+          : {
+              light: {
+                ...prev.light,
+                DEFAULT: value,
+              },
+              dark: {
+                ...prev.dark,
+                DEFAULT: value,
+              },
+            }
+      );
+    },
+    [useSeparateDarkMode]
+  );
 
   const Breadcrumb = ({ editingThemeId }: { editingThemeId: string | null }) => {
     return (
@@ -282,7 +490,6 @@ const CustomiseThemePage = () => {
         >
           Dashboard
         </Link>
-
         {editingThemeId ? (
           <>
             <span className="px-1">/</span>
@@ -306,13 +513,25 @@ const CustomiseThemePage = () => {
   };
 
   if (isLoading) return <Loader contained />;
+
   return (
     <div className="space-y-6">
       <Breadcrumb editingThemeId={editingThemeId} />
       <div className="bg-gray-0 space-y-4 rounded-lg p-6 shadow-lg max-sm:-mx-4 max-sm:rounded-none max-sm:shadow-none dark:bg-gray-50">
         <div className="flex items-center gap-3">
           <Palette className="h-6 w-6" />
-          <h1 className="text-2xl font-bold text-gray-900">{editingThemeId ? "Update your theme" : "Create new theme"}</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{editingThemeId ? "Update your theme" : "Create new theme"}</h1>
+            {activeTheme && (
+              <button
+                className="text-theme-primary hover:underline"
+                onClick={() => loadTheme(activeTheme, false, 0)}
+                type="button"
+              >
+                or load from active theme config
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
@@ -322,19 +541,13 @@ const CustomiseThemePage = () => {
             onSubmit={saveTheme}
           >
             <div>
-              <label
-                htmlFor="themeName"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Theme Name
-              </label>
-              <input
+              <Input
+                label="Theme Name"
                 id="themeName"
                 type="text"
                 value={themeName}
                 onChange={(e) => setThemeName(e.target.value)}
                 placeholder="Enter theme name"
-                className="focus:ring-theme-primary w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
               />
             </div>
 
@@ -369,26 +582,24 @@ const CustomiseThemePage = () => {
               <h3 className="mb-4 text-lg font-semibold text-gray-800">Primary</h3>
               <div className="space-y-4">
                 <div>
-                  <label
-                    htmlFor="primaryColorPicker"
-                    className="mb-2 block text-sm font-medium text-gray-700"
-                  >
-                    Primary Color
-                  </label>
                   <div className="flex items-center gap-3">
-                    <input
+                    <Input
+                      label="Primary Color"
                       id="primaryColorPicker"
                       type="color"
-                      value={primaryColor[previewThemeMode]}
-                      onChange={(e) => setPrimaryColor((prev) => (useSeparateDarkMode ? { ...prev, [previewThemeMode]: e.target.value } : { light: e.target.value, dark: e.target.value }))}
-                      className="block h-10 w-10 rounded border border-transparent"
-                    />
-                    <input
-                      id="primaryColor"
-                      type="text"
-                      value={primaryColor[previewThemeMode]}
-                      onChange={(e) => setPrimaryColor((prev) => (useSeparateDarkMode ? { ...prev, [previewThemeMode]: e.target.value } : { light: e.target.value, dark: e.target.value }))}
-                      className="focus:ring-theme-primary flex-1 rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      value={primaryColor[previewThemeMode].DEFAULT}
+                      onChange={(e) => handlePrimaryColorChange(e.target.value, previewThemeMode)}
+                      className="h-10 w-10 grow-0 border-none !p-0"
+                      endAdornment={
+                        <div className="grow">
+                          <Input
+                            id="primaryColor"
+                            type="text"
+                            value={primaryColor[previewThemeMode].DEFAULT}
+                            onChange={(e) => handlePrimaryColorChange(e.target.value, previewThemeMode)}
+                          />
+                        </div>
+                      }
                     />
                   </div>
                 </div>
@@ -397,25 +608,37 @@ const CustomiseThemePage = () => {
                   <RadioGroup
                     name="primaryContrast"
                     title="Text Color on Primary"
-                    value={primaryContrast[previewThemeMode]}
+                    value={primaryColor[previewThemeMode].contrast}
                     onChange={(value) =>
-                      setPrimaryContrast((prev) =>
+                      setPrimaryColor((prev) =>
                         useSeparateDarkMode
-                          ? { ...prev, [previewThemeMode]: value }
+                          ? {
+                              ...prev,
+                              [previewThemeMode]: {
+                                ...prev[previewThemeMode],
+                                contrast: value,
+                              },
+                            }
                           : {
-                              light: value,
-                              dark: value,
+                              light: {
+                                ...prev.light,
+                                contrast: value,
+                              },
+                              dark: {
+                                ...prev.dark,
+                                contrast: value,
+                              },
                             }
                       )
                     }
                     options={[
                       {
                         value: "white",
-                        label: `White text (Contrast:${primaryWhiteContrast[previewThemeMode].toFixed(1)}:1)`,
+                        label: `White text (Contrast:${contrastRatios.primaryWhite[previewThemeMode].toFixed(1)}:1)`,
                       },
                       {
                         value: "black",
-                        label: `Black text (Contrast:${primaryBlackContrast[previewThemeMode].toFixed(1)}:1)`,
+                        label: `Black text (Contrast:${contrastRatios.primaryBlack[previewThemeMode].toFixed(1)}:1)`,
                       },
                     ]}
                   />
@@ -443,44 +666,24 @@ const CustomiseThemePage = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <label
-                      htmlFor="accentColorPicker"
-                      className="mb-2 block text-sm font-medium text-gray-700"
-                    >
-                      Accent Color
-                    </label>
                     <div className="flex items-center gap-3">
-                      <input
+                      <Input
+                        label="Accent Color"
                         id="accentColorPicker"
                         type="color"
-                        value={accentColor[previewThemeMode]}
-                        onChange={(e) =>
-                          setAccentColor((prev) =>
-                            useSeparateDarkMode
-                              ? { ...prev, [previewThemeMode]: e.target.value }
-                              : {
-                                  light: e.target.value,
-                                  dark: e.target.value,
-                                }
-                          )
+                        value={accentColor[previewThemeMode].DEFAULT}
+                        onChange={(e) => handleAccentColorChange(e.target.value, previewThemeMode)}
+                        className="h-10 w-10 grow-0 border-none !p-0"
+                        endAdornment={
+                          <div className="grow">
+                            <Input
+                              id="accentColor"
+                              type="text"
+                              value={accentColor[previewThemeMode].DEFAULT}
+                              onChange={(e) => handleAccentColorChange(e.target.value, previewThemeMode)}
+                            />
+                          </div>
                         }
-                        className="block h-10 w-10 rounded border border-transparent"
-                      />
-                      <input
-                        id="accentColor"
-                        type="text"
-                        value={accentColor[previewThemeMode]}
-                        onChange={(e) =>
-                          setAccentColor((prev) =>
-                            useSeparateDarkMode
-                              ? { ...prev, [previewThemeMode]: e.target.value }
-                              : {
-                                  light: e.target.value,
-                                  dark: e.target.value,
-                                }
-                          )
-                        }
-                        className="focus:ring-theme-primary flex-1 rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -489,28 +692,37 @@ const CustomiseThemePage = () => {
                     <RadioGroup
                       name="accentContrast"
                       title="Text Color on Accent"
-                      value={accentContrast[previewThemeMode]}
+                      value={accentColor[previewThemeMode].contrast}
                       onChange={(value) =>
-                        setAccentContrast((prev) =>
+                        setAccentColor((prev) =>
                           useSeparateDarkMode
                             ? {
                                 ...prev,
-                                [previewThemeMode]: value,
+                                [previewThemeMode]: {
+                                  ...prev[previewThemeMode],
+                                  contrast: value,
+                                },
                               }
                             : {
-                                light: value,
-                                dark: value,
+                                light: {
+                                  ...prev.light,
+                                  contrast: value,
+                                },
+                                dark: {
+                                  ...prev.dark,
+                                  contrast: value,
+                                },
                               }
                         )
                       }
                       options={[
                         {
                           value: "white",
-                          label: `White text (Contrast:${accentWhiteContrast[previewThemeMode].toFixed(1)}:1)`,
+                          label: `White text (Contrast: ${contrastRatios.accentWhite[previewThemeMode].toFixed(1)}:1)`,
                         },
                         {
                           value: "black",
-                          label: `Black text (Contrast:${accentBlackContrast[previewThemeMode].toFixed(1)}:1)`,
+                          label: `Black text (Contrast: ${contrastRatios.accentBlack[previewThemeMode].toFixed(1)}:1)`,
                         },
                       ]}
                     />
@@ -526,28 +738,30 @@ const CustomiseThemePage = () => {
                 checked={willApplySameTheme}
                 onChange={(value) => setWillApplySameTheme(value)}
                 readonly={isEditingCurrentTheme}
+                helpText={isEditingCurrentTheme ? "This will be auto applied because you're editing the current theme." : ""}
               />
-              <p className="text-xs text-gray-500">{isEditingCurrentTheme ? "This will be auto applied because you're editing the current theme." : <span>&nbsp;</span>}</p>
             </div>
 
             {/* Form controls */}
             <div className="flex gap-3 pt-4">
-              <button
+              <Button
                 type="submit"
-                className="bg-theme-primary text-theme-primary-contrast hover:bg-theme-primary-interaction flex items-center gap-2 rounded-md px-4 py-2 transition-colors"
+                variant="primary"
+                size="lg"
                 disabled={isSaving}
+                startIcon={isSaving ? <LoaderIcon className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               >
-                {isSaving ? <LoaderIcon className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {editingThemeId ? "Update" : "Save"} Theme
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="gray"
+                size="lg"
                 onClick={resetForm}
-                className="rounded-md border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
                 disabled={isSaving}
               >
                 Reset
-              </button>
+              </Button>
             </div>
           </form>
 
@@ -571,9 +785,9 @@ const CustomiseThemePage = () => {
               {previewType === "visual" && (
                 <ThemePreview
                   primaryColor={primaryColor}
-                  primaryContrast={primaryContrast}
+                  primaryShades={{ light: getShades(primaryColor.light.DEFAULT), dark: getShades(primaryColor.light.DEFAULT) }}
                   accentColor={accentColor}
-                  accentContrast={accentContrast}
+                  accentShades={{ light: getShades(accentColor.light.DEFAULT), dark: getShades(accentColor.light.DEFAULT) }}
                   previewThemeMode={previewThemeMode}
                 />
               )}
@@ -614,7 +828,7 @@ const CustomiseThemePage = () => {
               {savedThemes.map((theme) => (
                 <div
                   key={theme.id}
-                  className="rounded-lg border bg-gray-100 p-4 transition-shadow hover:shadow-md"
+                  className="rounded-lg border bg-gray-50 p-4 transition-shadow hover:shadow-md dark:bg-gray-100"
                 >
                   <div className="mb-3 flex items-center justify-between">
                     <h3 className="font-semibold text-gray-800">{theme.label}</h3>
@@ -635,11 +849,11 @@ const CustomiseThemePage = () => {
                           <div
                             className="mx-auto grid h-8 w-8 place-items-center rounded border-2 border-gray-200"
                             style={{
-                              backgroundColor: theme.primaryColor.light,
+                              backgroundColor: theme.primaryColor.light.DEFAULT,
                             }}
-                            title={`Primary: ${theme.primaryColor.light}`}
+                            title={`Primary: ${theme.primaryColor.light.DEFAULT}`}
                           >
-                            <span style={{ color: theme.primaryContrast.light }}>1</span>
+                            <span style={{ color: theme.primaryColor.light.contrast }}>1</span>
                           </div>
                           <div>Primary</div>
                         </div>
@@ -647,11 +861,11 @@ const CustomiseThemePage = () => {
                           <div
                             className="mx-auto grid h-8 w-8 place-items-center rounded border-2 border-gray-200"
                             style={{
-                              backgroundColor: theme.accentColor.light,
+                              backgroundColor: theme.accentColor.light.DEFAULT,
                             }}
-                            title={`Accent: ${theme.accentColor.light}`}
+                            title={`Accent: ${theme.accentColor.light.DEFAULT}`}
                           >
-                            <span style={{ color: theme.accentContrast.light }}>1</span>
+                            <span style={{ color: theme.accentColor.light.contrast }}>1</span>
                           </div>
                           <div>Accent</div>
                         </div>
@@ -664,11 +878,11 @@ const CustomiseThemePage = () => {
                           <div
                             className="mx-auto grid h-8 w-8 place-items-center rounded border-2 border-gray-200"
                             style={{
-                              backgroundColor: theme.primaryColor.dark,
+                              backgroundColor: theme.primaryColor.dark.DEFAULT,
                             }}
-                            title={`Primary: ${theme.primaryColor.dark}`}
+                            title={`Primary: ${theme.primaryColor.dark.DEFAULT}`}
                           >
-                            <span style={{ color: theme.primaryContrast.dark }}>2</span>
+                            <span style={{ color: theme.primaryColor.dark.contrast }}>2</span>
                           </div>
                           <div>Primary</div>
                         </div>
@@ -676,11 +890,11 @@ const CustomiseThemePage = () => {
                           <div
                             className="mx-auto grid h-8 w-8 place-items-center rounded border-2 border-gray-200"
                             style={{
-                              backgroundColor: theme.accentColor.dark,
+                              backgroundColor: theme.accentColor.dark.DEFAULT,
                             }}
-                            title={`Accent: ${theme.accentColor.dark}`}
+                            title={`Accent: ${theme.accentColor.dark.DEFAULT}`}
                           >
-                            <span style={{ color: theme.accentContrast.dark }}>2</span>
+                            <span style={{ color: theme.accentColor.dark.contrast }}>2</span>
                           </div>
                           <div>Accent</div>
                         </div>
@@ -689,25 +903,25 @@ const CustomiseThemePage = () => {
                   </div>
 
                   <div className="flex gap-2">
+                    <Link
+                      href={`?id=${theme.id}`}
+                      className="flex-1 rounded bg-gray-200 px-2 py-2 text-center text-sm font-semibold text-gray-800 transition-colors hover:bg-gray-300"
+                    >
+                      Edit
+                    </Link>
                     <button
+                      className="text-theme-primary hover:bg-theme-primary/10 rounded px-2 py-1 text-xs"
                       onClick={() => {
                         navigator.clipboard.writeText(theme.css);
                         toast.success("CSS copied to clipboard!");
                       }}
-                      className="flex-1 rounded bg-gray-200 px-2 py-1 text-xs transition-colors hover:bg-gray-300"
+                      title="Copy CSS"
                     >
-                      Copy CSS
+                      <Copy className="h-4 w-4" />
                     </button>
-                    <Link
-                      className="text-theme-primary hover:bg-theme-primary/10 rounded px-2 py-1 text-xs"
-                      href={`?id=${theme.id}`}
-                      title="Update this theme"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Link>
                   </div>
 
-                  <div className="mt-2 text-xs text-gray-400">Created: {new Date(theme.createdAt).toLocaleDateString()}</div>
+                  <div className="mt-2 text-xs text-gray-400">Created: {new Date(theme.createdAt).toDateString()}</div>
                 </div>
               ))}
             </div>

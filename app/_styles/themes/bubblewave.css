@@ -14,7 +14,7 @@
   /* default primary, interaction, contrast */
   --color-theme-primary: var(--color-theme-primary-500);
   --color-theme-primary-interaction: var(--color-theme-primary-600);
-  --color-theme-primary-contrast: var(--color-gray-0);
+  --color-theme-primary-contrast: var(--color-gray-1000);
 
   --color-theme-accent-50: rgb(253 242 248);
   --color-theme-accent-100: rgb(252 231 243);
@@ -64,5 +64,5 @@
   /* override light mode accent, interaction, contrast */
   --color-theme-accent: var(--color-theme-accent-500);
   --color-theme-accent-interaction: var(--color-theme-accent-600);
-  --color-theme-accent-contrast: var(--color-gray-0);
+  --color-theme-accent-contrast: var(--color-gray-1000);
 }

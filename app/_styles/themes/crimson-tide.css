@@ -64,5 +64,5 @@
   /* override light mode accent, interaction, contrast */
   --color-theme-accent: var(--color-theme-accent-500);
   --color-theme-accent-interaction: var(--color-theme-accent-600);
-  --color-theme-accent-contrast: var(--color-gray-0);
+  --color-theme-accent-contrast: var(--color-gray-1000);
 }
