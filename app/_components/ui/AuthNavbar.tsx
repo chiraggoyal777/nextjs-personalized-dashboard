@@ -6,7 +6,7 @@ import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
 import { Theme } from "@/types/theme";
 import { CircleUser, Edit3, Loader, LogOut, PaintbrushVertical, Palette, WandSparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import React, { CSSProperties, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 interface AuthNavbarProps {
@@ -106,7 +106,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                         {
                           "--color-stop-1": item.colors[0],
                           "--color-stop-2": item.colors[1],
-                        } as React.CSSProperties
+                        } as CSSProperties
                       }
                     >
                       <div className="absolute -right-[1px] -bottom-[1px]">
@@ -132,7 +132,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                         {
                           "--color-stop-1": item.colors[0],
                           "--color-stop-2": item.colors[1],
-                        } as React.CSSProperties
+                        } as CSSProperties
                       }
                     ></div>
                     <span className="grow truncate">{item.label}</span>
@@ -173,9 +173,9 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                   isSelected={false}
                 >
                   <div className="flex items-center gap-3">
-                    <PaintbrushVertical className="text-theme-primary size-4" />
-                    <span className="from-theme-primary to-theme-accent bg-gradient-to-r bg-clip-text text-transparent">
-                      <span>Customise theme</span> <small className="from-theme-primary to-theme-accent text-theme-primary-contrast inline-block rounded-full bg-gradient-to-r px-2 align-middle">new</small>
+                    <PaintbrushVertical className="shrink-0 text-theme-primary size-4" />
+                    <span className="min-w-0 flex items-center from-theme-primary to-theme-accent bg-gradient-to-r bg-clip-text text-transparent">
+                      <span className="min-w-0 truncate mr-1">Customise theme</span> <small className="shrink-0 from-theme-primary to-theme-accent text-theme-primary-contrast inline-block rounded-full bg-gradient-to-r px-2 align-middle">new</small>
                     </span>
                   </div>
                 </DropdownItem>
@@ -185,9 +185,9 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                     isSelected={false}
                   >
                     <div className="flex items-center gap-3">
-                      <Edit3 className="text-theme-primary size-4" />
-                      <span className="from-theme-primary to-theme-accent bg-gradient-to-r bg-clip-text text-transparent">
-                        <span>Modify {activeTheme.label}</span>
+                      <Edit3 className="shrink-0 text-theme-primary size-4" />
+                      <span className="min-w-0 flex items-center from-theme-primary to-theme-accent bg-gradient-to-r bg-clip-text text-transparent">
+                        <span className="min-w-0 truncate">Modify {activeTheme.label}</span>
                       </span>
                     </div>
                   </DropdownItem>

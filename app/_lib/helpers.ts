@@ -191,3 +191,14 @@ export const generateThemeCSS = ({ cssClassName, primaryColor, primaryContrast, 
 
   return css;
 };
+
+export const debounce = <T extends (...args: unknown[]) => void>(
+  func: T, 
+  delay: number
+): ((...args: Parameters<T>) => void) => {
+  let timeoutId: NodeJS.Timeout | number;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};

@@ -1,18 +1,20 @@
 "use client";
-import React, { useState, useEffect, CSSProperties, useMemo } from "react";
-import { Palette, Save, Eye, Trash2, Download, TrendingUp, DollarSign, Users, Code, Edit, Loader as LoaderIcon } from "lucide-react";
-import Toggle, { TogglePreview } from "@/components/ui/Toggle";
-import Radio, { RadioPreview } from "@/components/ui/Radio";
-import Checkbox, { CheckboxPreview } from "@/components/ui/Checkbox";
+import React, { useState, useEffect, useMemo } from "react";
+import { Palette, Save, Eye, Trash2, Download, Code, Edit, Loader as LoaderIcon } from "lucide-react";
+import Toggle from "@/components/ui/Toggle";
+import Checkbox from "@/components/ui/Checkbox";
 import Link from "next/link";
-import CopyIconButton from "@/components/ui/CopyIconButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GeneratedTheme, ThemePalette } from "@/types/theme";
 import { useTheme } from "@/components/contexts/ThemeProvider";
 import { useClient } from "@/components/contexts/ClientProvider";
 import toast from "react-hot-toast";
-import { generatePalette, generateThemeCSS, getContrastRatio } from "@/lib/helpers";
+import { generateThemeCSS, getContrastRatio } from "@/lib/helpers";
 import Loader from "@/components/ui/Loader";
+import ButtonTabs from "@/components/ui/ButtonTabs";
+import ThemePreview from "@/components/ui/ThemePreview";
+import CSSPreview from "@/components/ui/CSSPreview";
+import RadioGroup from "@/components/ui/RadioGroup";
 
 const INITIAL_PRIMARY_COLOR = "#d946ef";
 const INITIAL_PRIMARY_CONTRAST_COLOR = "white";
@@ -181,11 +183,11 @@ const CustomiseThemePage = () => {
     toast.success("Theme data exported!");
   };
 
-  const whiteContrast = {
+  const primaryWhiteContrast = {
     light: getContrastRatio(primaryColor.light, "#ffffff"),
     dark: getContrastRatio(primaryColor.dark, "#ffffff"),
   };
-  const blackContrast = {
+  const primaryBlackContrast = {
     light: getContrastRatio(primaryColor.light, "#000000"),
     dark: getContrastRatio(primaryColor.dark, "#000000"),
   };
@@ -338,24 +340,21 @@ const CustomiseThemePage = () => {
 
             {/* Add dark mode switch */}
             <div className="flex justify-between gap-2">
-              <div className="flex rounded bg-gray-100 p-1">
-                <button
-                  type="button"
-                  onClick={() => (useSeparateDarkMode ? setPreviewThemeMode("light") : previewThemeMode === "light" ? setPreviewThemeMode("dark") : setPreviewThemeMode("light"))}
-                  className={`block rounded px-2 py-1 text-sm capitalize ${(useSeparateDarkMode && previewThemeMode === "light") || !useSeparateDarkMode ? "bg-theme-accent" : "bg-transparent text-gray-700"}`}
-                >
-                  {useSeparateDarkMode ? "Light" : previewThemeMode}
-                </button>
-                {useSeparateDarkMode && (
-                  <button
-                    type="button"
-                    onClick={() => setPreviewThemeMode("dark")}
-                    className={`block rounded px-2 py-1 text-sm capitalize ${previewThemeMode === "dark" ? "bg-theme-accent" : "bg-transparent text-gray-700"}`}
-                  >
-                    Dark
-                  </button>
-                )}
-              </div>
+              <ButtonTabs
+                tabs={
+                  useSeparateDarkMode
+                    ? [
+                        { value: "light", elm: "Light " },
+                        { value: "dark", elm: "Dark" },
+                      ]
+                    : previewThemeMode === "dark"
+                      ? [{ value: "light", elm: "Dark" }]
+                      : [{ value: "dark", elm: "Light" }]
+                }
+                activeTab={previewThemeMode}
+                onChange={(value) => setPreviewThemeMode(value)}
+                markAllActive={!useSeparateDarkMode}
+              />
 
               <Toggle
                 label="Use separate dark mode"
@@ -395,42 +394,31 @@ const CustomiseThemePage = () => {
                 </div>
 
                 <div>
-                  <fieldset className="mb-2 block text-sm font-medium text-gray-700">Text Color on Primary</fieldset>
-                  <div className="space-y-2">
-                    <Radio
-                      label={`White text (Contrast:${whiteContrast[previewThemeMode].toFixed(1)}:1)`}
-                      name="primaryContrast"
-                      value="white"
-                      checked={primaryContrast[previewThemeMode] === "white"}
-                      onChange={(value) =>
-                        setPrimaryContrast((prev) =>
-                          useSeparateDarkMode
-                            ? { ...prev, [previewThemeMode]: value }
-                            : {
-                                light: value,
-                                dark: value,
-                              }
-                        )
-                      }
-                    />
-                    <br />
-                    <Radio
-                      label={`Black text (Contrast:${blackContrast[previewThemeMode].toFixed(1)}:1)`}
-                      name="primaryContrast"
-                      value="black"
-                      checked={primaryContrast[previewThemeMode] === "black"}
-                      onChange={(value) =>
-                        setPrimaryContrast((prev) =>
-                          useSeparateDarkMode
-                            ? { ...prev, [previewThemeMode]: value }
-                            : {
-                                light: value,
-                                dark: value,
-                              }
-                        )
-                      }
-                    />
-                  </div>
+                  <RadioGroup
+                    name="primaryContrast"
+                    title="Text Color on Primary"
+                    value={primaryContrast[previewThemeMode]}
+                    onChange={(value) =>
+                      setPrimaryContrast((prev) =>
+                        useSeparateDarkMode
+                          ? { ...prev, [previewThemeMode]: value }
+                          : {
+                              light: value,
+                              dark: value,
+                            }
+                      )
+                    }
+                    options={[
+                      {
+                        value: "white",
+                        label: `White text (Contrast:${primaryWhiteContrast[previewThemeMode].toFixed(1)}:1)`,
+                      },
+                      {
+                        value: "black",
+                        label: `Black text (Contrast:${primaryBlackContrast[previewThemeMode].toFixed(1)}:1)`,
+                      },
+                    ]}
+                  />
                 </div>
               </div>
             </div>
@@ -498,48 +486,34 @@ const CustomiseThemePage = () => {
                   </div>
 
                   <div>
-                    <fieldset className="mb-2 block text-sm font-medium text-gray-700">Text Color on Accent</fieldset>
-                    <div className="space-y-2">
-                      <Radio
-                        label={`White text (Contrast:${accentWhiteContrast[previewThemeMode].toFixed(1)}:1)`}
-                        name="accentContrast"
-                        value="white"
-                        checked={accentContrast[previewThemeMode] === "white"}
-                        onChange={(value) =>
-                          setAccentContrast((prev) =>
-                            useSeparateDarkMode
-                              ? {
-                                  ...prev,
-                                  [previewThemeMode]: value,
-                                }
-                              : {
-                                  light: value,
-                                  dark: value,
-                                }
-                          )
-                        }
-                      />
-                      <br />
-                      <Radio
-                        label={`Black text (Contrast:${accentBlackContrast[previewThemeMode].toFixed(1)}:1)`}
-                        name="accentContrast"
-                        value="black"
-                        checked={accentContrast[previewThemeMode] === "black"}
-                        onChange={(value) =>
-                          setAccentContrast((prev) =>
-                            useSeparateDarkMode
-                              ? {
-                                  ...prev,
-                                  [previewThemeMode]: value,
-                                }
-                              : {
-                                  light: value,
-                                  dark: value,
-                                }
-                          )
-                        }
-                      />
-                    </div>
+                    <RadioGroup
+                      name="accentContrast"
+                      title="Text Color on Accent"
+                      value={accentContrast[previewThemeMode]}
+                      onChange={(value) =>
+                        setAccentContrast((prev) =>
+                          useSeparateDarkMode
+                            ? {
+                                ...prev,
+                                [previewThemeMode]: value,
+                              }
+                            : {
+                                light: value,
+                                dark: value,
+                              }
+                        )
+                      }
+                      options={[
+                        {
+                          value: "white",
+                          label: `White text (Contrast:${accentWhiteContrast[previewThemeMode].toFixed(1)}:1)`,
+                        },
+                        {
+                          value: "black",
+                          label: `Black text (Contrast:${accentBlackContrast[previewThemeMode].toFixed(1)}:1)`,
+                        },
+                      ]}
+                    />
                   </div>
                 </div>
               </div>
@@ -583,170 +557,29 @@ const CustomiseThemePage = () => {
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-800">{previewType === "visual" ? "Preview" : "Generated CSS"}</h3>
 
-                <div className="flex rounded bg-gray-100 p-1">
-                  <button
-                    className={`block rounded px-2 py-1 ${previewType === "visual" ? "bg-theme-accent" : "bg-transparent text-gray-700"}`}
-                    onClick={() => setPreviewType("visual")}
-                  >
-                    <Eye className="size-4" />
-                  </button>
-                  <button
-                    className={`block rounded px-2 py-1 ${previewType === "code" ? "bg-theme-accent" : "bg-transparent text-gray-700"}`}
-                    onClick={() => setPreviewType("code")}
-                  >
-                    <Code className="size-4" />
-                  </button>
-                </div>
+                <ButtonTabs
+                  tabs={[
+                    { value: "visual", elm: <Eye className="size-4" /> },
+                    { value: "code", elm: <Code className="size-4" /> },
+                  ]}
+                  activeTab={previewType}
+                  onChange={(value) => setPreviewType(value)}
+                />
               </div>
 
               {/* Visual */}
               {previewType === "visual" && (
-                <div
-                  className={`rounded-lg border-2 bg-[var(--background-color)] p-4 text-[var(--text-color)]`}
-                  style={
-                    {
-                      "--text-color": previewThemeMode === "dark" ? "#fff" : "#000",
-                      "--background-color": previewThemeMode === "dark" ? "#000" : "#fff",
-                    } as CSSProperties
-                  }
-                >
-                  <div className="space-y-4">
-                    {/* Primary */}
-                    <div className="space-y-3">
-                      <div
-                        className="rounded px-4 py-2 text-center font-medium"
-                        style={{
-                          backgroundColor: previewThemeMode === "dark" ? primaryColor.dark : primaryColor.light,
-                          color: previewThemeMode === "dark" ? primaryContrast.dark : primaryContrast.light,
-                        }}
-                      >
-                        Primary
-                      </div>
-                      <div className="grid grid-cols-5 gap-1">
-                        {Object.entries(generatePalette(previewThemeMode === "dark" ? primaryColor.dark : primaryColor.light)).map(([shade, color]) => (
-                          <div
-                            key={shade}
-                            className="flex h-8 items-center justify-center rounded text-xs font-medium"
-                            style={{
-                              backgroundColor: color,
-                              color: previewThemeMode === "dark" ? primaryContrast.dark : primaryContrast.light,
-                            }}
-                            title={`${shade}: ${color}`}
-                          >
-                            {shade}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Accent */}
-                    <div className="space-y-3">
-                      <div
-                        className="rounded px-4 py-2 text-center font-medium"
-                        style={{
-                          backgroundColor: previewThemeMode === "dark" ? accentColor.dark : accentColor.light,
-                          color: previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light,
-                        }}
-                      >
-                        Accent
-                      </div>
-                      <div className="grid grid-cols-5 gap-1">
-                        {Object.entries(generatePalette(previewThemeMode === "dark" ? accentColor.dark : accentColor.light)).map(([shade, color]) => (
-                          <div
-                            key={shade}
-                            className="flex h-8 items-center justify-center rounded text-xs font-medium"
-                            style={{
-                              backgroundColor: color,
-                              color: previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light,
-                            }}
-                            title={`${shade}: ${color}`}
-                          >
-                            {shade}
-                          </div>
-                        ))}
-                      </div>
-                      <TogglePreview
-                        label="Toggles"
-                        name="themeToggle"
-                        color={previewThemeMode === "dark" ? accentColor.dark : accentColor.light}
-                        contrast={previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light}
-                        mode={previewThemeMode}
-                        defaultChecked
-                      />
-                      <br />
-                      <div>
-                        <RadioPreview
-                          label="Radio 1"
-                          name="sample"
-                          value="sample-value-1"
-                          color={previewThemeMode === "dark" ? accentColor.dark : accentColor.light}
-                          contrast={previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light}
-                          mode={previewThemeMode}
-                          defaultChecked
-                        />
-                        <br />
-                        <RadioPreview
-                          label="Radio 2"
-                          name="sample"
-                          value="sample-value-2"
-                          color={previewThemeMode === "dark" ? accentColor.dark : accentColor.light}
-                          contrast={previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light}
-                          mode={previewThemeMode}
-                        />
-                      </div>
-                      <div>
-                        <CheckboxPreview
-                          label="Checkbox 1"
-                          name="checkbox1"
-                          color={previewThemeMode === "dark" ? accentColor.dark : accentColor.light}
-                          contrast={previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light}
-                          mode={previewThemeMode}
-                          defaultChecked
-                        />
-                        <br />
-                        <CheckboxPreview
-                          label="Checkbox 2"
-                          name="checkbox2"
-                          color={previewThemeMode === "dark" ? accentColor.dark : accentColor.light}
-                          contrast={previewThemeMode === "dark" ? accentContrast.dark : accentContrast.light}
-                          mode={previewThemeMode}
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        {[TrendingUp, DollarSign, Users].map((Icon, index) => (
-                          <div
-                            key={index}
-                            className="w-max shrink-0 rounded-full bg-[var(--accent-faded-color)] p-3 text-[var(--accent-color)]"
-                            style={
-                              {
-                                "--accent-color": previewThemeMode === "dark" ? accentColor.dark : accentColor.light,
-                                "--accent-faded-color": `color-mix(in oklab, var(--accent-color) 10%, transparent)`,
-                              } as CSSProperties
-                            }
-                          >
-                            <Icon className="h-6 w-6" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ThemePreview
+                  primaryColor={primaryColor}
+                  primaryContrast={primaryContrast}
+                  accentColor={accentColor}
+                  accentContrast={accentContrast}
+                  previewThemeMode={previewThemeMode}
+                />
               )}
 
               {/* Code */}
-              {previewType === "code" && (
-                <div className="relative">
-                  <div className="absolute top-1 right-6">
-                    <CopyIconButton
-                      value={generatedCSS}
-                      onCopySuccess={() => toast("CSS copied to clipboard!")}
-                    />
-                  </div>
-                  <div className="max-h-96 w-full overflow-scroll rounded bg-gray-100 p-3 text-xs">
-                    <pre>{generatedCSS}</pre>
-                  </div>
-                </div>
-              )}
+              {previewType === "code" && <CSSPreview css={generatedCSS} />}
             </div>
           </div>
         </div>
