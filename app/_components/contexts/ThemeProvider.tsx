@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { SYSTEM_THEMES, applyTheme, loadThemePreferences, saveThemePreferences } from "@/lib/theme";
 import { Button } from "@/components/ui/Button";
 import { Monitor, Moon, Sun } from "lucide-react";
@@ -18,6 +18,8 @@ interface ThemeContextType {
   setTheme: (theme: ThemeStoreOrNull, showToast?: boolean, delay?: number) => void;
   setThemeMode: (mode: ThemeMode) => void;
   isLoaded: boolean;
+  applyingThemeId: ThemeStore["id"];
+  applyThemeGlobal: (theme: ThemeStore) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -151,6 +153,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const [applyingThemeId, setApplyingThemeId] = useState<string>("");
+
+  const requestTokenRef = useRef(0);
+
+  const applyThemeGlobal = async (nextTheme: ThemeStore) => {
+    if (theme && theme.id === nextTheme.id) return;
+
+    const requestId = ++requestTokenRef.current;
+    setApplyingThemeId(nextTheme.id);
+
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated async
+
+    if (requestId !== requestTokenRef.current) return;
+
+    toast.dismiss();
+    setTheme(nextTheme);
+    setApplyingThemeId("");
+  };
+
   // Prevent flash of unstyled content
   if (!isLoaded) {
     return (
@@ -172,22 +193,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setTheme,
         setThemeMode,
         isLoaded,
+        applyingThemeId,
+        applyThemeGlobal,
       }}
     >
       {children}
 
-      <div className="fixed right-4 bottom-4">
+      <div className="fixed right-4 bottom-4 z-20">
         <Dropdown
           trigger={
             <Button
-              variant="gray"
+              color="accent"
+              variant="fill"
               size="sm"
               className="flex items-center gap-2 p-2"
-              brand={theme === null}
-            >
-              {getThemeIcon()}
-              <span className="sr-only">{getThemeLabel()}</span>
-            </Button>
+              startIcon={getThemeIcon()}
+              title={getThemeLabel()}
+              aria-label="Choose theme"
+              roundedFull
+            />
           }
           isOpen={isDropdownOpen}
           onToggle={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -204,7 +228,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               <Monitor className="h-4 w-4" />
               <div>
                 <div>System</div>
-                <div className="text-xs opacity-50">Use system setting</div>
+                <div className="text-xs opacity-60">Use system setting</div>
               </div>
             </div>
           </DropdownItem>
@@ -217,7 +241,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               <Sun className="h-4 w-4" />
               <div>
                 <div>Light</div>
-                <div className="text-xs opacity-50">Light mode</div>
+                <div className="text-xs opacity-60">Light mode</div>
               </div>
             </div>
           </DropdownItem>
@@ -230,7 +254,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               <Moon className="h-4 w-4" />
               <div>
                 <div>Dark</div>
-                <div className="text-xs opacity-50">Dark mode</div>
+                <div className="text-xs opacity-60">Dark mode</div>
               </div>
             </div>
           </DropdownItem>

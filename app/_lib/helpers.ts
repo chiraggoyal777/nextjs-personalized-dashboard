@@ -20,12 +20,7 @@ export function rgbToHex(rgb: string): string {
 export function normalizeHex(hex: string): string {
   // Handle shorthand like #fff
   if (hex.startsWith("#") && hex.length === 4) {
-    return (
-      "#" +
-      hex[1] + hex[1] +
-      hex[2] + hex[2] +
-      hex[3] + hex[3]
-    ).toLowerCase();
+    return ("#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3]).toLowerCase();
   }
   return hex.toLowerCase();
 }
@@ -150,7 +145,7 @@ export const getContrastRatio = (color1: string, color2: "#ffffff" | "#000000"):
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 };
 
-export const generateThemeCSS = ({ cssClassName, primaryColor, accentColor, useSeparateDarkMode, useSeparateAccent }: { cssClassName: string; primaryColor: ThemePalette;  accentColor: ThemePalette; useSeparateDarkMode: boolean; useSeparateAccent: boolean }) => {
+export const generateThemeCSS = ({ cssClassName, primaryColor, accentColor, useSeparateDarkMode, useSeparateAccent }: { cssClassName: string; primaryColor: ThemePalette; accentColor: ThemePalette; useSeparateDarkMode: boolean; useSeparateAccent: boolean }) => {
   const primaryPalette = generatePalette(primaryColor.light.DEFAULT);
   const accentPalette = useSeparateAccent ? generatePalette(accentColor.light.DEFAULT) : generatePalette(primaryColor.light.DEFAULT);
 
@@ -217,17 +212,6 @@ export const generateThemeCSS = ({ cssClassName, primaryColor, accentColor, useS
   css += `}\n`;
 
   return css;
-};
-
-export const debounce = <T extends (...args: unknown[]) => void>(
-  func: T, 
-  delay: number
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: NodeJS.Timeout | number;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  };
 };
 
 export function isWithinNDays(createdAt: string, days: number): boolean {

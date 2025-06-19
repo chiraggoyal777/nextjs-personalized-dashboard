@@ -45,7 +45,7 @@ function Dropdown({ trigger, children, isOpen, onToggle, onClose, position = "bo
       ref={dropdownRef}
     >
       <div onClick={onToggle}>{trigger}</div>
-      {isOpen && <div className={`bg-gray-0 absolute z-50 my-2 max-h-[calc(100vh-4rem)] overflow-auto rounded-lg py-1 text-gray-900 shadow-lg ${customWidthClasses ? customWidthClasses : "w-48"} ${position.includes("center") ? "left-1/2 -translate-x-1/2" : ""} ${position.includes("right") ? "right-0" : ""} ${position.includes("left") ? "left-0" : ""} ${position.includes("top") ? "bottom-full" : ""} ${position.includes("bottom") ? "top-full" : ""} `}>{children}</div>}
+      {isOpen && <div className={`bg-gray-0 absolute z-50 my-2 max-h-[calc(100vh-6rem)] overflow-auto rounded-lg py-1 text-gray-900 shadow-lg ${customWidthClasses ? customWidthClasses : "w-48"} ${position.includes("center") ? "left-1/2 -translate-x-1/2" : ""} ${position.includes("right") ? "right-0" : ""} ${position.includes("left") ? "left-0" : ""} ${position.includes("top") ? "bottom-full" : ""} ${position.includes("bottom") ? "top-full" : ""} `}>{children}</div>}
     </div>
   );
 }

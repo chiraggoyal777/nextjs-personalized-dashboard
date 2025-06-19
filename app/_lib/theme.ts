@@ -23,10 +23,8 @@ export const applyTheme = (theme: ThemeStoreOrNull, isDark: boolean = false) => 
   // Apply dark mode
   if (isDark) {
     root.classList.add("dark");
-    root.style.colorScheme = "dark";
   } else {
     root.classList.remove("dark");
-    root.style.removeProperty("color-scheme");
   }
 };
 
@@ -119,6 +117,7 @@ export const SYSTEM_THEMES: ThemeStore[] = [
     useSeparateAccent: true,
     isUserCreated: false,
     createdAt: "2025-06-01T00:00:00Z",
+    modifiedAt: "2025-06-01T00:00:00Z",
     css: "",
   },
   {
@@ -154,6 +153,7 @@ export const SYSTEM_THEMES: ThemeStore[] = [
     useSeparateAccent: true,
     isUserCreated: false,
     createdAt: "2025-06-01T10:00:00.000Z",
+    modifiedAt: "2025-06-01T10:00:00.000Z",
     css: "",
   },
   {
@@ -189,6 +189,7 @@ export const SYSTEM_THEMES: ThemeStore[] = [
     useSeparateAccent: true,
     isUserCreated: false,
     createdAt: "2025-06-02T10:05:00.000Z",
+    modifiedAt: "2025-06-02T10:05:00.000Z",
     css: "",
   },
   {
@@ -224,6 +225,7 @@ export const SYSTEM_THEMES: ThemeStore[] = [
     useSeparateAccent: true,
     isUserCreated: false,
     createdAt: "2025-06-02T10:10:00.000Z",
+    modifiedAt: "2025-06-02T10:10:00.000Z",
     css: "",
   },
   {
@@ -259,6 +261,7 @@ export const SYSTEM_THEMES: ThemeStore[] = [
     useSeparateAccent: true,
     isUserCreated: false,
     createdAt: "2025-06-02T10:12:00.000Z",
+    modifiedAt: "2025-06-02T10:12:00.000Z",
     css: "",
   },
   {
@@ -294,6 +297,7 @@ export const SYSTEM_THEMES: ThemeStore[] = [
     useSeparateAccent: true,
     isUserCreated: false,
     createdAt: "2025-06-09T10:14:00.000Z",
+    modifiedAt: "2025-06-09T10:14:00.000Z",
     css: "",
   },
   {
@@ -329,6 +333,7 @@ export const SYSTEM_THEMES: ThemeStore[] = [
     useSeparateAccent: true,
     isUserCreated: false,
     createdAt: "2025-06-10T10:17:00.000Z",
+    modifiedAt: "2025-06-10T10:17:00.000Z",
     css: "",
   },
   {
@@ -364,6 +369,7 @@ export const SYSTEM_THEMES: ThemeStore[] = [
     useSeparateAccent: true,
     isUserCreated: false,
     createdAt: "2025-06-15T10:22:00.000Z",
+    modifiedAt: "2025-06-15T10:22:00.000Z",
     css: "",
   },
 ];

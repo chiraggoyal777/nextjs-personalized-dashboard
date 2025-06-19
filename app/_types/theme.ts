@@ -16,13 +16,14 @@ export type ThemeStore = Theme & {
   useSeparateDarkMode: boolean;
   css: string;
   createdAt: string; // ISO timestamp
+  modifiedAt: string; // ISO timestamp
 };
 
 export type PaletteState = {
   DEFAULT: string;
   interaction: string;
   contrast: string;
-}
+};
 
 export type ThemePalette = {
   light: PaletteState;

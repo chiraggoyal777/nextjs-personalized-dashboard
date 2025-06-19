@@ -7,7 +7,7 @@ import { isWithinNDays } from "@/lib/helpers";
 import { ThemeStore } from "@/types/theme";
 import { CircleUser, Edit3, Loader, LogOut, PaintbrushVertical, Palette, WandSparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { CSSProperties, useRef, useState } from "react";
+import React, { CSSProperties, useState } from "react";
 import toast from "react-hot-toast";
 
 interface AuthNavbarProps {
@@ -55,9 +55,8 @@ const ThemeItemContent = ({ item, isDark, showUserIcon = false, showNewBadge = f
 const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: AuthNavbarProps) => {
   const router = useRouter();
   const { client } = useClient();
-  const { theme: activeTheme, isDark } = useTheme();
+  const { theme: activeTheme, isDark, allThemes, setTheme, applyingThemeId, applyThemeGlobal: handleApplyTheme } = useTheme();
 
-  const { theme, allThemes, setTheme } = useTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -76,32 +75,6 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
     customThemes: allThemes.filter((theme) => theme.isUserCreated).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
   };
 
-  const [applyingThemeId, setApplyingThemeId] = useState("");
-
-  const requestTokenRef = useRef(0);
-
-  async function handleApplyTheme(theme: ThemeStore) {
-    if (activeTheme && activeTheme.id === theme.id) return;
-
-    // Cancel previous requests using a request token
-    const requestId = ++requestTokenRef.current;
-    setApplyingThemeId(theme.id);
-
-    // Optional delay to simulate async task
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // If this is not the latest request, exit silently
-    if (requestId !== requestTokenRef.current) return;
-
-    // Dismiss all existing toasts
-    toast.dismiss();
-
-    // Apply theme and show new toast
-    setTheme(theme);
-
-    setApplyingThemeId("");
-  }
-
   return (
     <nav className="bg-theme-primary sticky top-0 z-10 shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -118,12 +91,12 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
               customWidthClasses="w-56"
               trigger={
                 <Button
-                  variant="gray"
+                  color="gray"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setIsDropdownOpen(true)}
-                >
-                  <Palette className="h-4 w-4" />
-                </Button>
+                  endIcon={<Palette />}
+                />
               }
               isOpen={isDropdownOpen}
               onToggle={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -136,7 +109,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                 <DropdownItem
                   key={item.id}
                   onClick={() => handleApplyTheme(item)}
-                  isSelected={theme?.cssClassName === item.cssClassName}
+                  isSelected={activeTheme?.cssClassName === item.cssClassName}
                 >
                   <ThemeItemContent
                     item={item}
@@ -153,7 +126,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                 <DropdownItem
                   key={item.id}
                   onClick={() => handleApplyTheme(item)}
-                  isSelected={theme?.cssClassName === item.cssClassName}
+                  isSelected={activeTheme?.cssClassName === item.cssClassName}
                 >
                   <ThemeItemContent
                     item={item}
@@ -167,11 +140,11 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
               <>
                 <hr />
                 <DropdownItem
-                  onClick={() => theme !== null && !applyingThemeId && (toast.dismiss(), setTheme(null))}
-                  isSelected={theme === null}
+                  onClick={() => activeTheme !== null && !applyingThemeId && (toast.dismiss(), setTheme(null))}
+                  isSelected={activeTheme === null}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="from-primary to-accent size-4 rounded-full bg-gradient-to-br"></div>
+                    <div className="from-primary to-accent size-4 rounded-full bg-[linear-gradient(to_bottom_right,var(--color-primary)_0%,var(--color-primary)_50%,var(--color-accent)_50%,var(--color-accent)_100%)]"></div>
                     <span>Brand default</span>
                   </div>
                 </DropdownItem>
@@ -218,15 +191,15 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                 )}
               </>
             </Dropdown>
-
             <Button
-              variant="gray"
+              color="gray"
+              variant="ghost"
               size="sm"
               onClick={handleLogout}
               disabled={isLoggingOut}
+              startIcon={isLoggingOut ? <Loader className="animate-spin" /> : <LogOut />}
             >
-              {isLoggingOut ? <Loader className="mr-2 size-4 animate-spin" /> : <LogOut className="mr-2 size-4" />}
-              <span className="-my-1">Logout</span>
+              <span>Logout</span>
             </Button>
           </div>
         </div>

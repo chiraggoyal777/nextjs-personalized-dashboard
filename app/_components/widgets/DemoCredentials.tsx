@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useRef, useEffect } from "react";
 import { ClipboardCopy, Check } from "lucide-react";
 
@@ -22,7 +23,6 @@ const CopyField: React.FC<CopyFieldProps> = ({ label, item, copiedId, onCopy }) 
       <span className="rounded bg-gray-100 px-2 py-1 font-mono text-sm text-black">{item.value}</span>
       <button
         onClick={() => onCopy(item.id, item.value)}
-        className="text-blue-500 hover:text-blue-700 focus:outline-none"
         title="Copy to clipboard"
       >
         {isCopied ? <Check size={16} /> : <ClipboardCopy size={16} />}

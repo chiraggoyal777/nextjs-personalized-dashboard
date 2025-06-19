@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Codepen, Github, Linkedin, WandSparkles, X } from "lucide-react";
+import { WandSparkles, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { ClientProvider } from "@/components/contexts/ClientProvider";
-import ClientInfo from "@/components/ui/ClientInfo";
-import AuthNavbar from "@/components/ui/AuthNavbar";
+import ClientInfo from "@/components/widgets/ClientInfo";
+import AuthNavbar from "@/components/layouts/AuthNavbar";
+import OwnerInfo from "@/components/widgets/OwnerInfo";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [showMoreFeaturesInfo, setShowMoreFeaturesInfo] = useState(false);
@@ -33,13 +34,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <ClientProvider>
-      <div className="min-h-screen flex flex-col">
+      <div className="flex min-h-screen flex-col">
         {/* Navbar */}
         <AuthNavbar
           isShowMoreFeaturesVisible={showMoreFeaturesInfo}
           onShowMoreFeaturesClick={() => setShowMoreFeaturesInfo(true)}
         />
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 w-full grow">
+        <div className="mx-auto w-full max-w-7xl grow px-4 py-8 sm:px-6 lg:px-8">
           {/* Welcome Section */}
           <ClientInfo />
 
@@ -49,13 +50,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               className="relative mb-8"
               ref={moreFeaturesInfoRef}
             >
-              <div className="absolute -top-2 -right-2 w-max">
+              <div className="absolute -top-3 -right-3 w-max">
                 <Button
-                  className="!bg-gray-0 !text-theme-accent !border-theme-accent !ring-theme-accent/20 !rounded-full !border-4 !p-1"
+                  color="accent"
+                  size="sm"
                   onClick={() => setShowMoreFeaturesInfo(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                  startIcon={<X />}
+                  roundedFull
+                />
               </div>
               <div className="from-theme-primary to-theme-accent rounded-xl bg-gradient-to-r p-1">
                 <Card>
@@ -80,44 +82,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </div>
 
-        <footer className="bg-background pt-4 pb-10 text-gray-600 dark:text-gray-800 w-full">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 sm:flex-row sm:px-6 lg:px-8">
-            <p className="text-sm opacity-80">&copy; chiraggoyal777</p>
-            <span className="hidden px-4 opacity-30 sm:block">|</span>
-            <div className="mt-2 flex sm:mt-0">
-              <a
-                href="https://github.com/chiraggoyal777"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Visit my Github repo"
-                className="hover:bg-theme-accent hover:text-theme-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
-                title="Visit my Github repo"
-              >
-                <Github className="size-4" />
-              </a>
-              <a
-                href="https://codepen.io/chiraggoyal777"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Follow me on Codepen"
-                className="hover:bg-theme-accent hover:text-theme-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
-                title="Follow me on Codepen"
-              >
-                <Codepen className="size-4" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/chiraggoyal777"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Let's connect on LinkedIn"
-                className="hover:bg-theme-accent hover:text-theme-accent-contrast block shrink-0 rounded-full p-2 transition-colors"
-                title="Let's connect on LinkedIn"
-              >
-                <Linkedin className="size-4" />
-              </a>
-            </div>
-          </div>
-        </footer>
+        <OwnerInfo showUsername />
+
+        <div className="pb-10"></div>
       </div>
     </ClientProvider>
   );

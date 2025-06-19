@@ -12,7 +12,7 @@ interface CopyIconButtonProps {
   onCopyError?: (error: Error) => void;
 }
 
-const CopyIconButton = ({ value, className = "text-blue-500 hover:text-blue-700 focus:outline-none transition-colors", size = 16, title = "Copy to clipboard", resetDelay = 2000, onCopySuccess, onCopyError }: CopyIconButtonProps) => {
+const CopyIconButton = ({ value, className = "", size = 16, title = "Copy to clipboard", resetDelay = 2000, onCopySuccess, onCopyError }: CopyIconButtonProps) => {
   const [isCopied, setIsCopied] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -56,14 +56,7 @@ const CopyIconButton = ({ value, className = "text-blue-500 hover:text-blue-700 
       disabled={isCopied}
       type="button"
     >
-      {isCopied ? (
-        <Check
-          size={size}
-          className="text-green-500"
-        />
-      ) : (
-        <ClipboardCopy size={size} />
-      )}
+      {isCopied ? <Check size={size} /> : <ClipboardCopy size={size} />}
     </button>
   );
 };

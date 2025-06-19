@@ -12,8 +12,6 @@
 @theme inline {
   /* reset colors */
   --color-*: initial;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
 
   /* shades of gray from 0 to 1000 */
   --color-gray-0: var(--color-gray-0);
@@ -126,7 +124,8 @@
   @apply hover:text-theme-accent-contrast;
 }
 
-body {
+body,
+.tp {
   background: var(--color-background);
   color: var(--color-foreground);
 }
@@ -145,5 +144,26 @@ body {
   }
   button:disabled {
     @apply pointer-events-none opacity-60;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border-2 text-center leading-normal font-medium transition-colors focus:ring-2 focus:outline-none disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-full {
+    @apply flex w-full;
+  }
+  .btn-icon {
+    @apply flex h-[1lh] items-center justify-center;
+    svg {
+      @apply size-[1.25em] text-[currentColor];
+    }
+  }
+  .btn-roundedFull {
+    @apply rounded-full;
+  }
+  .btn-roundedFull .btn-icon {
+    @apply w-[1lh];
   }
 }

@@ -1,10 +1,8 @@
-import Loader from '@/components/ui/Loader'
-import React from 'react'
+import Loader from "@/components/ui/Loader";
+import React from "react";
 
 const AppLoader = () => {
-  return (
-    <Loader />
-  )
-}
+  return <Loader />;
+};
 
-export default AppLoader
+export default AppLoader;

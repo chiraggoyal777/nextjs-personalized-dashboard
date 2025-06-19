@@ -1,10 +1,8 @@
-import Loader from '@/components/ui/Loader'
-import React from 'react'
+import Loader from "@/components/ui/Loader";
+import React from "react";
 
 const AuthLoader = () => {
-  return (
-    <Loader />
-  )
-}
+  return <Loader />;
+};
 
-export default AuthLoader
+export default AuthLoader;

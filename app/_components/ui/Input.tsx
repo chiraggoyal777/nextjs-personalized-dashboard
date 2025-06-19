@@ -23,7 +23,7 @@ const Input: React.FC<InputProps> = ({ label, value, defaultValue, onChange, req
           className="block text-sm font-medium text-gray-600"
         >
           {label}
-          {required && <span className="text-red-500">*</span>}
+          {required && <span className="text-danger ml-1">*</span>}
         </label>
       )}
 
@@ -38,6 +38,7 @@ const Input: React.FC<InputProps> = ({ label, value, defaultValue, onChange, req
           onChange={onChange}
           placeholder={placeholder}
           className={`focus:ring-theme-primary focus:border-theme-primary grow rounded-md border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 transition-all duration-150 focus:ring-2 focus:outline-none ${className} `}
+          required={required}
           {...rest}
         />
         {endAdornment}
