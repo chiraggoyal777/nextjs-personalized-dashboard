@@ -447,6 +447,10 @@ const ThemeCustomiserForm: React.FC<ThemeCustomiserFormProps> = ({ editingThemeI
     setIsConfigLoaded(false);
   }, [activeTheme]);
 
+  useEffect(() => {
+    setIsConfigLoaded(false);
+  }, [editingThemeId]);
+
   if (isLoading) return <Loader contained />;
 
   return (
@@ -456,7 +460,7 @@ const ThemeCustomiserForm: React.FC<ThemeCustomiserFormProps> = ({ editingThemeI
           <Palette className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-[length:inherit] leading-[inherit] font-bold text-gray-900">{editingThemeId ? "Update your theme" : "Create new theme"}</h1>
+          <h1 className="font-bold text-gray-900">{editingThemeId ? "Update your theme" : "Create new theme"}</h1>
           {activeTheme && !isEditingCurrentTheme && !isConfigLoaded && (
             <button
               className="text-theme-primary block text-sm hover:underline"
@@ -464,11 +468,11 @@ const ThemeCustomiserForm: React.FC<ThemeCustomiserFormProps> = ({ editingThemeI
                 loadTheme(activeTheme, false, 0);
                 setIsConfigLoaded(true);
                 toast.dismiss();
-                toast.success(`${activeTheme.label} theme config loaded!`);
+                toast.success(`Config loaded from ${activeTheme.label} theme!`);
               }}
               type="button"
             >
-              or load from active theme config
+              or load config from active theme
             </button>
           )}
         </div>

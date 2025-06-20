@@ -1,4 +1,6 @@
 export type ThemeMode = "system" | "light" | "dark";
+
+export type ThemeModeOption = { value: ThemeMode; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; text: string; subText?: string };
 export interface Theme {
   id: string;
   cssClassName: string;

@@ -144,14 +144,17 @@ const ThemePreview = (props: ThemPreviewProps) => {
                   <CheckboxPreview
                     label="Checkbox 1"
                     name="checkbox1"
+                    defaultChecked
                   />
                   <CheckboxPreview
                     label="Checkbox 2"
                     name="checkbox2"
+                    defaultChecked
                   />
                 </div>
                 <div className="flex">
                   <ButtonTabsPreview
+                    size="sm"
                     tabs={[
                       { value: 1, elm: "ButtonTab one" },
                       { value: 2, elm: "Some long name ButtonTab" },

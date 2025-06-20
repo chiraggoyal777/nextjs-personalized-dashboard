@@ -65,7 +65,7 @@ const SavedThemes = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-start gap-2 text-base leading-normal">
-                    <h3 className="text-[length:inherit] leading-[inherit] font-semibold text-gray-800">{theme.label}</h3>
+                    <h3 className="font-semibold text-gray-800">{theme.label}</h3>
                     {activeTheme?.id === theme.id && (
                       <span
                         className="flex h-[1lh] shrink-0 items-center justify-center"

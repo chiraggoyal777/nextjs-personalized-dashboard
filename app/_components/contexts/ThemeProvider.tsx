@@ -5,7 +5,7 @@ import { SYSTEM_THEMES, applyTheme, loadThemePreferences, saveThemePreferences }
 import { Button } from "@/components/ui/Button";
 import { Monitor, Moon, Sun } from "lucide-react";
 import Dropdown, { DropdownItem } from "@/components/ui/Dropdown";
-import { ThemeStore, ThemeMode, ThemeStoreOrNull } from "@/types/theme";
+import { ThemeStore, ThemeMode, ThemeStoreOrNull, ThemeModeOption } from "@/types/theme";
 import toast from "react-hot-toast";
 
 interface ThemeContextType {
@@ -23,6 +23,12 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+const THEME_OPTIONS: ThemeModeOption[] = [
+  { value: "system", icon: Monitor, text: "System", subText: "Use system setting" },
+  { value: "light", icon: Sun, text: "Light", subText: "Light mode" },
+  { value: "dark", icon: Moon, text: "Dark", subText: "Dark mode" },
+];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [savedThemes, setSavedThemes] = useState<ThemeStore[]>([]);
@@ -134,24 +140,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getThemeIcon = () => {
-    if (themeMode === "system") {
-      return <Monitor className="h-4 w-4" />;
-    }
-    return isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />;
+    return THEME_OPTIONS.find((option) => option.value === themeMode)?.icon || Monitor;
   };
+  const ActiveThemeIcon = getThemeIcon();
 
   const getThemeLabel = () => {
-    switch (themeMode) {
-      case "system":
-        return "System";
-      case "light":
-        return "Light";
-      case "dark":
-        return "Dark";
-      default:
-        return "System";
-    }
+    return THEME_OPTIONS.find((option) => option.value === themeMode)?.text || "Unknown";
   };
+  const activeThemeLabel = getThemeLabel();
 
   const [applyingThemeId, setApplyingThemeId] = useState<string>("");
 
@@ -204,11 +200,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           trigger={
             <Button
               color="accent"
-              variant="fill"
+              variant="ghost"
               size="sm"
               className="flex items-center gap-2 p-2"
-              startIcon={getThemeIcon()}
-              title={getThemeLabel()}
+              startIcon={<ActiveThemeIcon />}
+              title={activeThemeLabel}
               aria-label="Choose theme"
               roundedFull
             />
@@ -220,44 +216,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         >
           <div className="border-b border-gray-200 px-3 py-2 text-xs font-semibold">Theme Mode</div>
 
-          <DropdownItem
-            onClick={() => setThemeMode("system")}
-            isSelected={themeMode === "system"}
-          >
-            <div className="flex items-center gap-3">
-              <Monitor className="h-4 w-4" />
-              <div>
-                <div>System</div>
-                <div className="text-xs opacity-60">Use system setting</div>
-              </div>
-            </div>
-          </DropdownItem>
-
-          <DropdownItem
-            onClick={() => setThemeMode("light")}
-            isSelected={themeMode === "light"}
-          >
-            <div className="flex items-center gap-3">
-              <Sun className="h-4 w-4" />
-              <div>
-                <div>Light</div>
-                <div className="text-xs opacity-60">Light mode</div>
-              </div>
-            </div>
-          </DropdownItem>
-
-          <DropdownItem
-            onClick={() => setThemeMode("dark")}
-            isSelected={themeMode === "dark"}
-          >
-            <div className="flex items-center gap-3">
-              <Moon className="h-4 w-4" />
-              <div>
-                <div>Dark</div>
-                <div className="text-xs opacity-60">Dark mode</div>
-              </div>
-            </div>
-          </DropdownItem>
+          {THEME_OPTIONS.map((option) => {
+            const Icon = option.icon;
+            return (
+              <DropdownItem
+                key={option.value}
+                onClick={() => setThemeMode(option.value)}
+                isSelected={themeMode === option.value}
+              >
+                <div className="flex min-h-[2lh] items-center gap-3 text-sm leading-tight">
+                  <Icon className="size-[1em]" />
+                  <div>
+                    <div>{option.text}</div>
+                    {option.subText && (
+                      <div className="opacity-60">
+                        <small>{option.subText}</small>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </DropdownItem>
+            );
+          })}
         </Dropdown>
       </div>
     </ThemeContext.Provider>
