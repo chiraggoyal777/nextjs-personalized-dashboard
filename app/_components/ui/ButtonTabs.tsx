@@ -73,6 +73,8 @@ const ButtonTabs = <T extends string | number>({ activeTab: controlledTab, defau
     lg: "[--tab-radius:var(--radius-lg)] [--tab-padding:--spacing(2)]",
   };
 
+  const baseClasses = "btn border-transparent focus:ring-0 rounded-[calc(var(--tab-radius)-calc(var(--tab-padding)/2))]";
+
   return (
     <div
       ref={mainRef}
@@ -95,7 +97,7 @@ const ButtonTabs = <T extends string | number>({ activeTab: controlledTab, defau
             }}
             type="button"
             onClick={() => handleTabClick(value)}
-            className={`block rounded-[calc(var(--tab-radius)-calc(var(--tab-padding)/2))] leading-normal transition-colors ${BTN_SIZE_CLASSES[size]} ${markAllActive ? "bg-theme-accent" : "bg-transparent"} ${activeTab === value && !markAllActive ? "text-theme-accent-contrast" : ""} `}
+            className={`${baseClasses} ${BTN_SIZE_CLASSES[size]} ${markAllActive ? "bg-theme-accent" : "bg-transparent"} ${activeTab === value && !markAllActive ? "text-theme-accent-contrast" : ""} `}
           >
             {isIconType ? <span className="btn-icon">{elm}</span> : elm}
           </button>

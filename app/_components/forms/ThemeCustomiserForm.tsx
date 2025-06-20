@@ -440,18 +440,32 @@ const ThemeCustomiserForm: React.FC<ThemeCustomiserFormProps> = ({ editingThemeI
     updateInteractionColors();
   }, [debouncedPrimaryColor.light.DEFAULT, debouncedPrimaryColor.dark.DEFAULT, debouncedAccentColor.light.DEFAULT, debouncedAccentColor.dark.DEFAULT, getInteractionColor]);
 
+  const [isConfigLoaded, setIsConfigLoaded] = useState(false);
+
+  useEffect(() => {
+    if (isSilentUpdate.current) return;
+    setIsConfigLoaded(false);
+  }, [activeTheme]);
+
   if (isLoading) return <Loader contained />;
 
   return (
     <div className="bg-gray-0 space-y-4 rounded-lg p-6 shadow-lg max-sm:-mx-4 max-sm:rounded-none max-sm:shadow-none dark:bg-gray-50">
-      <div className="flex items-center gap-3">
-        <Palette className="h-6 w-6" />
+      <div className="flex items-start gap-3 text-2xl leading-snug">
+        <div className="flex h-[1lh] items-center justify-center">
+          <Palette className="h-6 w-6" />
+        </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{editingThemeId ? "Update your theme" : "Create new theme"}</h1>
-          {activeTheme && (
+          <h1 className="text-[length:inherit] leading-[inherit] font-bold text-gray-900">{editingThemeId ? "Update your theme" : "Create new theme"}</h1>
+          {activeTheme && !isEditingCurrentTheme && !isConfigLoaded && (
             <button
-              className="text-theme-primary hover:underline"
-              onClick={() => loadTheme(activeTheme, false, 0)}
+              className="text-theme-primary block text-sm hover:underline"
+              onClick={() => {
+                loadTheme(activeTheme, false, 0);
+                setIsConfigLoaded(true);
+                toast.dismiss();
+                toast.success(`${activeTheme.label} theme config loaded!`);
+              }}
               type="button"
             >
               or load from active theme config

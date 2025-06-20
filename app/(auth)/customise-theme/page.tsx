@@ -5,6 +5,7 @@ import { ThemeStore } from "@/types/theme";
 import ThemeCustomiserForm from "@/components/forms/ThemeCustomiserForm";
 import ThemeCustomerBreadCrumb from "@/components/widgets/ThemeCustomiserBreadcrumb";
 import SavedThemes from "@/components/widgets/SavedThemes";
+import toast from "react-hot-toast";
 
 const CustomiseThemePage = () => {
   const router = useRouter();
@@ -37,6 +38,7 @@ const CustomiseThemePage = () => {
       <ThemeCustomiserForm
         editingThemeId={editingThemeId}
         onFailedToLoad={() => {
+          toast.error("Requested theme could not be found!");
           router.push("/customise-theme");
         }}
         onSaveOrUpdateSuccess={() => {
