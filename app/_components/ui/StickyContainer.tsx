@@ -24,7 +24,7 @@ const StickyContainer: React.FC<StickContainerProps> = ({ children, position = "
       },
       {
         threshold: 0,
-        rootMargin: getSentinelMargin(position, offset),
+        rootMargin: getSentinelMargin(position),
       }
     );
 
@@ -73,7 +73,7 @@ const StickyContainer: React.FC<StickContainerProps> = ({ children, position = "
     };
   }, [position, offset]);
 
-  const getSentinelMargin = (pos: StickyPosition, offset: string): string => {
+  const getSentinelMargin = (pos: StickyPosition): string => {
     switch (pos) {
       case "top":
         return `0px 0px -100% 0px`;
