@@ -32,10 +32,10 @@ const Checkbox = ({ label, name, value, checked, defaultChecked = false, onChang
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <label
         htmlFor={name}
-        className="flex cursor-pointer items-center gap-2"
+        className="flex w-max cursor-pointer items-center gap-2"
       >
         <input
           id={name}

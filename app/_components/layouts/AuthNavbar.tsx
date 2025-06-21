@@ -19,11 +19,11 @@ interface ThemeItemContentProps {
   item: ThemeStore;
   isDark: boolean;
   showUserIcon?: boolean;
-  showNewBadge?: boolean;
+  showNewBadge?: string;
   applying: boolean;
 }
 
-const ThemeItemContent = ({ item, isDark, showUserIcon = false, showNewBadge = false, applying }: ThemeItemContentProps) => {
+const ThemeItemContent = ({ item, isDark, showUserIcon = false, showNewBadge = "", applying }: ThemeItemContentProps) => {
   const primary = isDark ? item.primaryColor.dark : item.primaryColor.light;
   const accent = isDark ? item.accentColor.dark : item.accentColor.light;
 
@@ -46,7 +46,7 @@ const ThemeItemContent = ({ item, isDark, showUserIcon = false, showNewBadge = f
         )}
       </div>
       <span className="grow truncate">{item.label}</span>
-      {showNewBadge && <small className="inline-block shrink-0 rounded-full bg-gradient-to-r from-[var(--color-stop-1)] to-[var(--color-stop-2)] px-2 align-middle text-[var(--contrast)]">{isWithinNDays(item.createdAt, 5) ? "new" : ""}</small>}
+      {showNewBadge && <small className="inline-block shrink-0 rounded-full bg-gradient-to-r from-[var(--color-stop-1)] to-[var(--color-stop-2)] px-2 align-middle text-[var(--contrast)]">{showNewBadge}</small>}
       {applying && <Loader className="h-4 w-4 shrink-0 animate-spin" />}
     </div>
   );
@@ -131,7 +131,7 @@ const AuthNavbar = ({ onShowMoreFeaturesClick, isShowMoreFeaturesVisible }: Auth
                   <ThemeItemContent
                     item={item}
                     isDark={isDark}
-                    showNewBadge
+                    showNewBadge={isWithinNDays(item.createdAt, 10) ? "new" : ""}
                     applying={applyingThemeId === item.id}
                   />
                 </DropdownItem>

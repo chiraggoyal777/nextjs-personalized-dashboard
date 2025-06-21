@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Palette, Save, Loader as LoaderIcon } from "lucide-react";
 import Toggle from "@/components/ui/Toggle";
 import Checkbox from "@/components/ui/Checkbox";
@@ -16,6 +16,8 @@ import { useTheme } from "@/components/contexts/ThemeProvider";
 import { generatePalette, generateThemeCSS, getContrastRatio, normalizeHex, rgbToHex } from "@/lib/helpers";
 import Loader from "@/components/ui/Loader";
 import { useSearchParams } from "next/navigation";
+import TextWithIcon from "@/components/ui/TextWithIcon";
+import StickyContainer from "@/components/ui/StickyContainer";
 
 interface ThemeCustomiserFormProps {
   editingThemeId: string | null;
@@ -35,13 +37,14 @@ const ThemeCustomiserForm: React.FC<ThemeCustomiserFormProps> = ({ editingThemeI
 
   const createThemeId = () => `theme-${client.id}-${Date.now()}`;
   const [themeName, setThemeName] = useState("");
-  const [previewThemeMode, setPreviewThemeMode] = useState<keyof ThemePalette>("light");
-
+  
   const currentThemeId = editingThemeId ?? createThemeId();
-
+  
   const [isSaving, setIsSaving] = useState(false);
   const cssClassName = useMemo(() => (themeName.trim() === "" ? "[your-theme-name]" : "theme-" + themeName.toLowerCase().replace(/\s+/g, "-") + "_" + Date.now()), [themeName]);
-  const { savedThemes, setSavedThemes, theme: activeTheme, setTheme } = useTheme();
+  const { savedThemes, setSavedThemes, theme: activeTheme, setTheme, isDark } = useTheme();
+  const INITIAL_PREVIEW_THEME_MODE = isDark ? "dark" : "light";
+  const [previewThemeMode, setPreviewThemeMode] = useState<keyof ThemePalette>(INITIAL_PREVIEW_THEME_MODE);
 
   const isEditingCurrentTheme = Boolean(activeTheme && activeTheme.id === editingThemeId);
   const [willApplySameTheme, setWillApplySameTheme] = useState(false);
@@ -259,7 +262,7 @@ const ThemeCustomiserForm: React.FC<ThemeCustomiserFormProps> = ({ editingThemeI
     if (isSilentUpdate.current) return;
 
     if (!useSeparateDarkMode) {
-      setPreviewThemeMode("light");
+      setPreviewThemeMode(INITIAL_PREVIEW_THEME_MODE);
 
       setPrimaryColor((prev) => ({
         ...prev,
@@ -454,29 +457,35 @@ const ThemeCustomiserForm: React.FC<ThemeCustomiserFormProps> = ({ editingThemeI
   if (isLoading) return <Loader contained />;
 
   return (
-    <div className="bg-gray-0 space-y-4 rounded-lg p-6 shadow-lg max-sm:-mx-4 max-sm:rounded-none max-sm:shadow-none dark:bg-gray-50">
-      <div className="flex items-start gap-3 text-2xl leading-snug">
-        <div className="flex h-[1lh] items-center justify-center">
-          <Palette className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="font-bold text-gray-900">{editingThemeId ? "Update your theme" : "Create new theme"}</h1>
-          {activeTheme && !isEditingCurrentTheme && !isConfigLoaded && (
-            <button
-              className="text-theme-primary block text-sm hover:underline"
-              onClick={() => {
-                loadTheme(activeTheme, false, 0);
-                setIsConfigLoaded(true);
-                toast.dismiss();
-                toast.success(`Config loaded from ${activeTheme.label} theme!`);
-              }}
-              type="button"
-            >
-              or load config from active theme
-            </button>
-          )}
-        </div>
-      </div>
+    <div
+      className="space-y-4 rounded-lg bg-[var(--form-bg-light)] p-6 shadow-lg max-sm:-mx-4 max-sm:rounded-none max-sm:shadow-none dark:bg-[var(--form-bg-dark)]"
+      style={
+        {
+          "--form-bg-light": "var(--color-gray-0)",
+          "--form-bg-dark": "var(--color-gray-50)",
+        } as CSSProperties
+      }
+    >
+      <TextWithIcon
+        className="text-2xl leading-snug"
+        main={<h1 className="font-bold text-gray-900">{editingThemeId ? "Update your theme" : "Create new theme"}</h1>}
+        icon={<Palette className="h-6 w-6" />}
+      >
+        {activeTheme && !isEditingCurrentTheme && !isConfigLoaded && (
+          <button
+            className="text-theme-primary block text-sm hover:underline"
+            onClick={() => {
+              loadTheme(activeTheme, false, 0);
+              setIsConfigLoaded(true);
+              toast.dismiss();
+              toast.success(`Config loaded from ${activeTheme.label} theme!`);
+            }}
+            type="button"
+          >
+            or load config from active theme
+          </button>
+        )}
+      </TextWithIcon>
       {/* Form & Preview container */}
       <div className="isolate grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Preview & Generated CSS */}
@@ -700,24 +709,29 @@ const ThemeCustomiserForm: React.FC<ThemeCustomiserFormProps> = ({ editingThemeI
           </div>
 
           {/* Form controls */}
-          <div className="bg-gray-0 sticky bottom-0 z-10 flex w-full justify-end gap-3 py-4 max-md:justify-center dark:bg-gray-50">
-            <Button
-              type="submit"
-              disabled={isSaving}
-              startIcon={isSaving ? <LoaderIcon className="animate-spin" /> : <Save />}
-            >
-              {editingThemeId ? "Update" : "Save"} Theme
-            </Button>
-            <Button
-              type="button"
-              color="gray"
-              variant="solid"
-              onClick={resetForm}
-              disabled={isSaving}
-            >
-              Reset
-            </Button>
-          </div>
+          <StickyContainer
+            position="bottom"
+            className="z-10 -my-[var(--vertical-offset)] [--vertical-offset:--spacing(4)]"
+          >
+            <div className="flex w-full justify-end gap-3 py-[var(--vertical-offset)] max-md:justify-center bg-[var(--form-bg-light)]/80 backdrop-blur-md dark:bg-[var(--form-bg-dark)]/80">
+              <Button
+                type="submit"
+                disabled={isSaving}
+                startIcon={isSaving ? <LoaderIcon className="animate-spin" /> : <Save />}
+              >
+                {editingThemeId ? "Update" : "Save"} Theme
+              </Button>
+              <Button
+                type="button"
+                color="gray"
+                variant="solid"
+                onClick={resetForm}
+                disabled={isSaving}
+              >
+                Reset
+              </Button>
+            </div>
+          </StickyContainer>
         </form>
       </div>
     </div>

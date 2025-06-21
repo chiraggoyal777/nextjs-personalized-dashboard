@@ -225,7 +225,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
                 isSelected={themeMode === option.value}
               >
                 <div className="flex min-h-[2lh] items-center gap-3 text-sm leading-tight">
-                  <Icon className="size-[1em]" />
+                  <Icon className="size-[1em] shrink-0" />
                   <div>
                     <div>{option.text}</div>
                     {option.subText && (

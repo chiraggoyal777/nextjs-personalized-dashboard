@@ -24,7 +24,7 @@ const ThemePreview = (props: ThemPreviewProps) => {
 
   return (
     <div
-      className={`tp !bg-transparent ${previewThemeMode === "dark" ? "tp-dark" : ""}`}
+      className={`tp overflow-hidden !bg-transparent ${previewThemeMode === "dark" ? "tp-dark" : ""}`}
       style={
         {
           "--color-theme-primary": primaryColor.DEFAULT,
@@ -138,6 +138,7 @@ const ThemePreview = (props: ThemPreviewProps) => {
                       { value: "option2", label: "Second Choice" },
                       { value: "option3", label: "Third Choice" },
                     ]}
+                    inline
                   />
                 </div>
                 <div className="space-y-2">
@@ -152,7 +153,7 @@ const ThemePreview = (props: ThemPreviewProps) => {
                     defaultChecked
                   />
                 </div>
-                <div className="flex">
+                <div>
                   <ButtonTabsPreview
                     size="sm"
                     tabs={[

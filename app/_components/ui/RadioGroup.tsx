@@ -11,6 +11,7 @@ interface RadioGroupProps {
   options: RadioOption[];
   name: string;
   value?: string; // Controlled
+  inline?: boolean;
   defaultValue?: string; // Uncontrolled
   onChange?: (value: string) => void;
   title?: string; // Optional fieldset title
@@ -18,7 +19,7 @@ interface RadioGroupProps {
   readOnly?: boolean; // Global readonly state
 }
 
-const RadioGroup = ({ options, name, value, defaultValue, onChange, title, disabled = false, readOnly = false }: RadioGroupProps) => {
+const RadioGroup = ({ options, name, value, defaultValue, onChange, title, disabled = false, readOnly = false, inline = false }: RadioGroupProps) => {
   const isControlled = value !== undefined;
   const [internalValue, setInternalValue] = useState(defaultValue || "");
   const currentValue = isControlled ? value : internalValue;
@@ -43,7 +44,7 @@ const RadioGroup = ({ options, name, value, defaultValue, onChange, title, disab
     return (
       <label
         key={option.value}
-        className={`flex items-center gap-2 ${isDisabled ? "cursor-not-allowed" : isReadOnly ? "cursor-default" : "cursor-pointer"}`}
+        className={`flex w-max items-center gap-2 ${isDisabled ? "cursor-not-allowed" : isReadOnly ? "cursor-default" : "cursor-pointer"}`}
       >
         <input
           type="radio"
@@ -75,7 +76,7 @@ const RadioGroup = ({ options, name, value, defaultValue, onChange, title, disab
     );
   };
 
-  const content = <div className="space-y-2">{options.map(renderRadio)}</div>;
+  const content = <div className={`flex flex-wrap gap-y-2 gap-x-3 ${inline ? "" : "flex-col items-start"}`}>{options.map(renderRadio)}</div>;
 
   // If title is provided, wrap in fieldset with legend
   if (title) {
